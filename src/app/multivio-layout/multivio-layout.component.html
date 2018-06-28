@@ -1,0 +1,35 @@
+<nz-layout style="height: 100%;">
+    <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" [nzWidth]="width" [nzReverseArrow]="isReverseArrow" [nzCollapsedWidth]=80>
+      <div class="logo">
+          <div *ngIf="isCollapsed;then logo_mini else logo_full"></div>
+          <ng-template #logo_mini>
+              <img style="margin: 5px 0px 0px -7px;" src="../../assets/images/logo_mini.png">
+          </ng-template>
+          <ng-template #logo_full>
+            <img style="margin: 10px 0px 0px 25px;" src="../../assets/images/logo_full.png">
+          </ng-template>   
+      </div>
+      <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed" >
+        <li (click)="onMenuClick(Menu.Recherche)" nz-menu-item><span><i class="anticon anticon-search"></i><span class="nav-text">Recherche </span></span></li>
+        <li (click)="onMenuClick(Menu.Structure)" nz-menu-item><span><i class="anticon anticon-bars"></i><span class="nav-text">Structure</span></span></li>
+        <li (click)="onMenuClick(Menu.Miniatures)" nz-menu-item><span><i class="anticon anticon-switcher"></i><span class="nav-text">Miniatures</span></span></li>
+        <li (click)="onMenuClick(Menu.Telecharger)" nz-menu-item><span><i class="anticon anticon-download"></i><span class="nav-text">Télécharger</span></span></li>
+        <li (click)="onMenuClick(Menu.AfficherMenu)" nz-menu-item><span><i class="anticon anticon-minus-square-o"></i><span class="nav-text">Afficher menu</span></span></li>
+        <li (click)="onMenuClick(Menu.Aide)" nz-menu-item><span><i class="anticon anticon-question-circle-o"></i><span class="nav-text">Aide</span></span></li>
+      </ul>
+    </nz-sider>
+    <app-collapsed-menu (toggleMenu)='toggleBottomMenu()' [urlDocument]='urlDocument'></app-collapsed-menu>
+    <nz-layout>
+      <nz-header style="background: #f0f2f5; padding:0;">
+        <div style="margin-left: 11%">Title</div>
+      </nz-header>
+      <nz-content style="margin:0 16px; overflow: auto;">
+        <div style="padding:24px; background: #f0f2f5; min-height: 360px;">
+          <app-content></app-content>
+          <app-bottom-menu ></app-bottom-menu>
+        </div>
+        
+      </nz-content>
+      <nz-footer style="text-align: center;">Powered by <a href="http://invenio-software.org/" target="_blank">Invenio</a>  / © Copyright <a href="http://www.rero.ch/">RERO</a></nz-footer>
+    </nz-layout>
+  </nz-layout>

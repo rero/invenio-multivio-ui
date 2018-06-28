@@ -1,0 +1,20 @@
+{
+  "/api-xml/*": {
+    "target": "http://localhost:5000",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api-xml": "http://localhost:5000/api-xml"
+    }
+  },
+  "/api-pdf/*": {
+    "target": "http://localhost:5000",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api-pdf": "http://localhost:5000/api-pdf"
+    }
+  }
+}

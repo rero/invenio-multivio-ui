@@ -1,0 +1,35 @@
+#bottomMenu{
+    background-color:#001529;
+    border-radius: 25px;
+    opacity: 0;  
+    transition: 2s;
+    width: 440px;
+    height: 44px;
+    margin: auto;
+}
+
+#affix{
+    width: 440px;
+    height: 44px;
+    margin: auto;
+}
+
+#inputPage{
+    width: 50px;
+    float: left;
+    margin: 5px 5px 0px 5px;
+    text-align: center;
+}
+
+#bottomMenu:hover{
+    opacity: 0.8;
+    transition: 0.4s;
+}
+
+.myIcons{
+    color: white;
+    opacity: 0.8;
+    font-size:24px;
+    float: left;
+    padding: 10px;
+}
