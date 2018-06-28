@@ -22,20 +22,22 @@ import { Menu } from '../menu.enum';
 })
 export class CollapsedMenuComponent implements OnInit {
 
+  inputValue: string = "";
   collapsed: boolean = false ;
   nodes: Array<Object> = [];
   counter: number = 0;
   actualMenu: number = 99;
   Menu = Menu;
   infoTocRetrieved: boolean = false;
+  resultsSearch: any[] = [];
+  sizeResultsSearch: number = 0;
+  loading = false;
+  hasMore = true;
   @Output() toggleMenu = new EventEmitter();
   @Input() urlDocument: string;
   
-  constructor(private documentService:DocumentService) { }
 
-  data: any[] = [];
-  loading = false;
-  hasMore = true;
+  constructor(private documentService:DocumentService) { }
 
   ngOnInit() {
     
@@ -115,12 +117,25 @@ export class CollapsedMenuComponent implements OnInit {
   }
 
   getInputSearch(input:string) {
-    console.log(input);
-    
     this.documentService.findText(input,this.urlDocument)
     .subscribe(res => {
-      console.log(res);
+      this.sizeResultsSearch = res.length;
+      this.resultsSearch = res;
+      for(let i = 0; i<res.length; i++){   //TODO
+        let startString = this.resultsSearch[i]["text"];
+        let endString = startString.replace(input, '<b>'+input+'</b>')
+        this.resultsSearch[i]["text"] = endString;    
+      }
     });
+  }
+
+  getPage(page: number){ //TODO
+    console.log("Page request: "+page);
+  }
+
+  clearResults(){ 
+    this.resultsSearch = [];
+    this.inputValue = null;
   }
 
 }

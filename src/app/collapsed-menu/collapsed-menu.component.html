@@ -3,11 +3,21 @@
         <ng-container *ngSwitchCase="Menu.Recherche">
             <div id="searchDoc">
                 <nz-input-group nzSearch [nzSuffix]="suffixIconButton">
-                <input type="text" nz-input placeholder="Chercher" #inputSearch>
+                <input type="text" nz-input placeholder="Chercher" #inputSearch (keyup.enter)="getInputSearch(inputSearch.value)" [(ngModel)]="inputValue">
                 </nz-input-group>
                 <ng-template #suffixIconButton>
-                    <button nz-button nzType="primary" nzSearch (click) = 'getInputSearch(inputSearch.value)'><i class="anticon anticon-search"></i></button>
+                    <button nz-button nzType="primary" nzSearch (click) = "getInputSearch(inputSearch.value)"><i class="anticon anticon-search"></i></button>
                 </ng-template>
+                <div *ngIf="resultsSearch.length > 0" id="divResults">
+                    <div>
+                        <h3 style="margin-bottom: 15px; float: left;">Results: {{sizeResultsSearch}}</h3>
+                        <i class="anticon anticon-close cancelResults" (click) = "clearResults()"></i>
+                    </div> 
+                    <ul *ngFor="let result of resultsSearch">
+                        <li (click) = "getPage(result.page)">{{result.text}}</li>
+                    </ul>
+                </div>
+                    
             </div>
         </ng-container>
         <ng-container *ngSwitchCase="Menu.Structure">

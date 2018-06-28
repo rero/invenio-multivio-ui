@@ -12,12 +12,18 @@ export class DocumentService {
   constructor(private http: HttpClient,
     private urlPrefix: UrlPrefixService) { }
 
-    /** GET heroes from the server */
+    /** GET toc from the document */
     getTOC(urlDocument: string): Observable<Object[]> {
-      return this.http.get<Object[]>(this.urlPrefix.tocURL + urlDocument);
+      return this.http.get<Object[]>(this.urlPrefix.tocDocument + urlDocument);
     }
 
+    /** GET find text from the document */
     findText(text: string, urlDocument: string): Observable<Object[]>{
       return this.http.get<Object[]>(this.urlPrefix.findText + urlDocument + '?string='+text);
+    }
+
+    /** GET metadata from the document */
+    getMetadata(urlDocument: string): Observable<Object[]> {
+      return this.http.get<Object[]>(this.urlPrefix.metadataDocument + urlDocument);
     }
 }

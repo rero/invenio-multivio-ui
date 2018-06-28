@@ -1,6 +1,7 @@
 import { Component, OnInit , ViewChild, Input} from '@angular/core';
 import { CollapsedMenuComponent } from '../collapsed-menu/collapsed-menu.component';
 import { BottomMenuComponent } from '../bottom-menu/bottom-menu.component';
+import { DocumentService } from '../document.service';
 import { Menu } from '../menu.enum';
 
 @Component({
@@ -19,10 +20,15 @@ export class MultivioLayoutComponent implements OnInit {
   isCollapsed: boolean = false;
   isReverseArrow: boolean = false;
   width: number  = 200;
+  title: string = "";
+  creator: string = "";
 
-  constructor() { }
+  constructor(private documentService:DocumentService) { 
+    
+  }
 
   ngOnInit() {
+    this.onLoad();
   }
 
   onMenuClick(e:Menu) {
@@ -33,6 +39,18 @@ export class MultivioLayoutComponent implements OnInit {
     this.bottomMenuComponent.toggleVisibility()
   }
 
-  
+  onLoad(){
+    this.documentService.getMetadata(this.urlDocument)
+    .subscribe(res => {
+      if(res['title'].length <= 1)
+        this.title = " ";
+      else
+        this.title = res['title'];
 
+      if(res['creator'].length <= 1)
+        this.creator = " ";
+      else
+        this.creator = res['creator'];
+    });
+  }
 }

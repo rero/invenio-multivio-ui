@@ -4,16 +4,18 @@ import { environment } from '../environments/environment';
 @Injectable()
 export class UrlPrefixService {
 
-  public tocURL: string;
+  public tocDocument: string;
   public findText: string;
+  public metadataDocument: string;
 
   constructor() { 
     if (environment.production) {
 
     }
     else{
-      this.tocURL = '/api-pdf/toc/';
+      this.tocDocument = '/api-pdf/toc/';
       this.findText = '/api-pdf/find/';
+      this.metadataDocument = '/api-pdf/metadata/';
     }
   }
 }
