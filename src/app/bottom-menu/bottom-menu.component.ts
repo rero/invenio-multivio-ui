@@ -14,6 +14,7 @@ export class BottomMenuComponent implements OnInit {
   currentValue: number = 1;
   minValuePage: number = 1;
   maxValuePage: number = 0;
+  currentAngle: number = 0;
   BottomMenu = BottomMenu;
 
   constructor() { }
@@ -49,9 +50,11 @@ export class BottomMenuComponent implements OnInit {
         break;
       case BottomMenu.RotateLeft:
         console.log("RotateLeft");
+        this.currentAngle = (this.currentAngle + 90)%360;
         break;
       case BottomMenu.RotateRight:
-        console.log("RotateRight");  
+        console.log("RotateRight");
+        this.currentAngle = (this.currentAngle - 90)%360;
         break;
       case BottomMenu.ZoomOut:
         console.log("ZommOut");
@@ -60,7 +63,7 @@ export class BottomMenuComponent implements OnInit {
         console.log("ZoomIn");
         break;    
     }
-    this.pageChanged.emit(this.currentValue);
+    this.pageChanged.emit({"Page":this.currentValue,"Angle": this.currentAngle});
   }
 
   setMaxPage(max: number){

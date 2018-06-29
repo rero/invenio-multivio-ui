@@ -130,7 +130,7 @@ export class CollapsedMenuComponent implements OnInit {
   }
 
   getPage(nrPage: number){ 
-    this.pageChanged.emit(nrPage);
+    this.pageChanged.emit({"Page":nrPage,"Angle": 0});
   }
 
   clearResults(){ 

@@ -30,8 +30,13 @@ export class DocumentService {
     }
 
     /** GET metadata from the document */
-    getImageFromPage(nrPage: number): Observable<Blob> {
-      return this.http.get(this.urlPrefix.imageDocument + this.urlDocument+ '?page_nr='+nrPage, {responseType: 'blob'});
+    getImageFromPage(nrPage: number, angle: number): Observable<Blob> {
+      let query = "";
+      if(nrPage != null)
+        query += '?page_nr='+nrPage;
+      if(angle != 0)
+        query += '&angle='+angle;
+      return this.http.get(this.urlPrefix.imageDocument + this.urlDocument+ query, {responseType: 'blob'});
     }
 
     /** SET url document from the document */

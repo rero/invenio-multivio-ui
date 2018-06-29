@@ -18,7 +18,7 @@
         <li (click)="onMenuClick(Menu.Aide)" nz-menu-item><span><i class="anticon anticon-question-circle-o"></i><span class="nav-text">Aide</span></span></li>
       </ul>
     </nz-sider>
-    <app-collapsed-menu (toggleMenu)='toggleBottomMenu()' (pageChanged)='updatePage($event)'></app-collapsed-menu>
+    <app-collapsed-menu (toggleMenu)='toggleBottomMenu()' (pageChanged)='updatePage($event, 0)'></app-collapsed-menu>
     <nz-layout>
       <nz-header style="background: #f0f2f5; padding:0;">
         <h3 style="text-align: center">{{title}}</h3>

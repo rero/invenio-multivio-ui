@@ -37,7 +37,7 @@ export class MultivioLayoutComponent implements OnInit {
   ngOnInit() {
     this.documentService.setUrlDocument(this.urlDocument);
     this.loadMetadata();
-    this.getImage(1);
+    this.getImage(1,0);
     
   }
 
@@ -49,9 +49,9 @@ export class MultivioLayoutComponent implements OnInit {
     this.bottomMenuComponent.toggleVisibility()
   }
 
-  updatePage(nrPage: number){
-    this.bottomMenuComponent.currentValue = nrPage;
-    this.getImage(nrPage);
+  updatePage(event: Object){
+    this.bottomMenuComponent.currentValue = event["Page"];
+    this.getImage(event["Page"], event["Angle"]);
   }
 
   loadMetadata(){
@@ -81,8 +81,8 @@ export class MultivioLayoutComponent implements OnInit {
     }
   }
 
-  getImage(nrPage: number) {
-    this.documentService.getImageFromPage(nrPage).subscribe(data => {
+  getImage(nrPage: number, angle: number) {
+    this.documentService.getImageFromPage(nrPage, angle).subscribe(data => {
       this.createImageFromBlob(data);
     });
   }
