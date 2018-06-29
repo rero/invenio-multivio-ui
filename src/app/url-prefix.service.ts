@@ -7,6 +7,7 @@ export class UrlPrefixService {
   public tocDocument: string;
   public findText: string;
   public metadataDocument: string;
+  public imageDocument: string;
 
   constructor() { 
     if (environment.production) {
@@ -16,6 +17,7 @@ export class UrlPrefixService {
       this.tocDocument = '/api-pdf/toc/';
       this.findText = '/api-pdf/find/';
       this.metadataDocument = '/api-pdf/metadata/';
+      this.imageDocument = '/api-pdf/render/';
     }
   }
 }

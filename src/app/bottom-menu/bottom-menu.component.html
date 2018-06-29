@@ -1,13 +1,13 @@
-<nz-affix id="affix" nzOffsetBottom="100">
+<nz-affix id="affix" nzOffsetBottom="0">
     <div id="bottomMenu" [ngStyle]="isVisible && {'opacity':'0.8'}">
-        <i class="fa fa-undo myIcons" style="transform: scaleX(-1); margin-left: 20px;"></i>
-        <i class="fa fa-undo myIcons"></i>
-        <i class="anticon anticon-fast-backward myIcons"></i>
-        <i class="anticon anticon-step-backward myIcons"></i>
-        <input nz-input placeholder="1" [(ngModel)]="value" id="inputPage">
-        <i class="anticon anticon-step-forward myIcons"></i>
-        <i class="anticon anticon-fast-forward myIcons"></i>
-        <i class="fa fa-search-plus myIcons"></i> 
-        <i class="fa fa-search-minus myIcons"></i>
+        <i (click)="onMenuClick(BottomMenu.RotateRight)" class="fa fa-undo myIcons" style="transform: scaleX(-1); margin-left: 20px;"></i>
+        <i (click)="onMenuClick(BottomMenu.RotateLeft)" class="fa fa-undo myIcons"></i>
+        <i (click)="onMenuClick(BottomMenu.FirstPage)" class="anticon anticon-fast-backward myIcons"></i>
+        <i (click)="onMenuClick(BottomMenu.DecrementPage)" class="anticon anticon-step-backward myIcons"></i>
+        <input nz-input [(ngModel)]="currentValue" id="inputPage">
+        <i (click)="onMenuClick(BottomMenu.IncrementPage)" class="anticon anticon-step-forward myIcons"></i>
+        <i (click)="onMenuClick(BottomMenu.LastPage)" class="anticon anticon-fast-forward myIcons"></i>
+        <i (click)="onMenuClick(BottomMenu.ZoomIn)" class="fa fa-search-plus myIcons"></i> 
+        <i (click)="onMenuClick(BottomMenu.ZoomOut)" class="fa fa-search-minus myIcons"></i>
     </div>
 </nz-affix>

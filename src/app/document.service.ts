@@ -9,21 +9,35 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 export class DocumentService {
 
+  public urlDocument: string = '';
+
   constructor(private http: HttpClient,
     private urlPrefix: UrlPrefixService) { }
 
     /** GET toc from the document */
-    getTOC(urlDocument: string): Observable<Object[]> {
-      return this.http.get<Object[]>(this.urlPrefix.tocDocument + urlDocument);
+    getTOC(): Observable<Object[]> {
+      return this.http.get<Object[]>(this.urlPrefix.tocDocument + this.urlDocument);
     }
 
     /** GET find text from the document */
-    findText(text: string, urlDocument: string): Observable<Object[]>{
-      return this.http.get<Object[]>(this.urlPrefix.findText + urlDocument + '?string='+text);
+    findText(text: string): Observable<Object[]>{
+      return this.http.get<Object[]>(this.urlPrefix.findText + this.urlDocument + '?string='+text);
     }
 
     /** GET metadata from the document */
-    getMetadata(urlDocument: string): Observable<Object[]> {
-      return this.http.get<Object[]>(this.urlPrefix.metadataDocument + urlDocument);
+    getMetadata(): Observable<Object[]> {
+      return this.http.get<Object[]>(this.urlPrefix.metadataDocument + this.urlDocument);
     }
+
+    /** GET metadata from the document */
+    getImageFromPage(nrPage: number): Observable<Blob> {
+      return this.http.get(this.urlPrefix.imageDocument + this.urlDocument+ '?page_nr='+nrPage, {responseType: 'blob'});
+    }
+
+    /** SET url document from the document */
+    setUrlDocument(url: string){
+      this.urlDocument = url;
+    }
+
+    
 }

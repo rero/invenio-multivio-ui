@@ -22,6 +22,9 @@ import { Menu } from '../menu.enum';
 })
 export class CollapsedMenuComponent implements OnInit {
 
+  @Output() toggleMenu = new EventEmitter();
+  @Output() pageChanged = new EventEmitter();
+
   inputValue: string = "";
   collapsed: boolean = false ;
   nodes: Array<Object> = [];
@@ -33,10 +36,7 @@ export class CollapsedMenuComponent implements OnInit {
   sizeResultsSearch: number = 0;
   loading = false;
   hasMore = true;
-  @Output() toggleMenu = new EventEmitter();
-  @Input() urlDocument: string;
   
-
   constructor(private documentService:DocumentService) { }
 
   ngOnInit() {
@@ -71,7 +71,7 @@ export class CollapsedMenuComponent implements OnInit {
   }
 
   mouseActionMenu(e: any): void {
-    console.log(e.node.origin);
+    this.getPage(e.node.origin.page);
   }
 
   asChildren (val: Object, node: Object){
@@ -96,7 +96,7 @@ export class CollapsedMenuComponent implements OnInit {
     switch (option) {
       case Menu.Structure:
         if(!this.infoTocRetrieved){
-          this.documentService.getTOC(this.urlDocument)
+          this.documentService.getTOC()
           .subscribe(res => {
             for (let i = 0; i < res.length; i++) {
               let a = {
@@ -117,7 +117,7 @@ export class CollapsedMenuComponent implements OnInit {
   }
 
   getInputSearch(input:string) {
-    this.documentService.findText(input,this.urlDocument)
+    this.documentService.findText(input)
     .subscribe(res => {
       this.sizeResultsSearch = res.length;
       this.resultsSearch = res;
@@ -129,8 +129,8 @@ export class CollapsedMenuComponent implements OnInit {
     });
   }
 
-  getPage(page: number){ //TODO
-    console.log("Page request: "+page);
+  getPage(nrPage: number){ 
+    this.pageChanged.emit(nrPage);
   }
 
   clearResults(){ 

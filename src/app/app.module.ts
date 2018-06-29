@@ -15,6 +15,7 @@ import { CollapsedMenuComponent } from './collapsed-menu/collapsed-menu.componen
 import { DocumentService } from './document.service';
 import { UrlPrefixService } from './url-prefix.service';
 
+
 registerLocaleData(fr);
 
 @NgModule({
@@ -32,7 +33,7 @@ registerLocaleData(fr);
     HttpClientModule,
     NgZorroAntdModule
   ],
-  providers: [DocumentService,UrlPrefixService, { provide: NZ_I18N, useValue: fr_FR }],
+  providers: [DocumentService, UrlPrefixService, { provide: NZ_I18N, useValue: fr_FR }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-content',
@@ -7,9 +7,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ContentComponent implements OnInit {
 
+  imageToShow: Blob ;
   constructor() { }
 
   ngOnInit() {
   }
 
+  setImage(image: Blob){
+    this.imageToShow = image;
+  }
+
+  
 }
