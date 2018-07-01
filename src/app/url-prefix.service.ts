@@ -8,6 +8,7 @@ export class UrlPrefixService {
   public findText: string;
   public metadataDocument: string;
   public imageDocument: string;
+  public downloadDocument: string;
 
   constructor() { 
     if (environment.production) {
@@ -18,6 +19,7 @@ export class UrlPrefixService {
       this.findText = '/api-pdf/find/';
       this.metadataDocument = '/api-pdf/metadata/';
       this.imageDocument = '/api-pdf/render/';
+      this.downloadDocument = '/api-pdf/download/';
     }
   }
 }

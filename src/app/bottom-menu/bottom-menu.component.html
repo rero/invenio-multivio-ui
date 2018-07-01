@@ -4,7 +4,7 @@
         <i (click)="onMenuClick(BottomMenu.RotateLeft)" class="fa fa-undo myIcons"></i>
         <i (click)="onMenuClick(BottomMenu.FirstPage)" class="anticon anticon-fast-backward myIcons"></i>
         <i (click)="onMenuClick(BottomMenu.DecrementPage)" class="anticon anticon-step-backward myIcons"></i>
-        <input nz-input [(ngModel)]="currentValue" id="inputPage">
+        <input nz-input (keyup.enter)="getPage(inputPage.value)" [(ngModel)]="currentPage" #inputPage id="inputPage">
         <i (click)="onMenuClick(BottomMenu.IncrementPage)" class="anticon anticon-step-forward myIcons"></i>
         <i (click)="onMenuClick(BottomMenu.LastPage)" class="anticon anticon-fast-forward myIcons"></i>
         <i (click)="onMenuClick(BottomMenu.ZoomIn)" class="fa fa-search-plus myIcons"></i> 

@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
+import { AngularResizedEventModule } from 'angular-resize-event';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
@@ -31,7 +31,8 @@ registerLocaleData(fr);
     BrowserAnimationsModule,
     FormsModule,
     HttpClientModule,
-    NgZorroAntdModule
+    NgZorroAntdModule,
+    AngularResizedEventModule
   ],
   providers: [DocumentService, UrlPrefixService, { provide: NZ_I18N, useValue: fr_FR }],
   bootstrap: [AppComponent]

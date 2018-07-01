@@ -30,16 +30,25 @@ export class DocumentService {
     }
 
     /** GET metadata from the document */
-    getImageFromPage(nrPage: number, angle: number): Observable<Blob> {
+    getImageFromPage(nrPage: number, angle: number, maxWidth: number, minHeight:number): Observable<Blob> {
       let query = "";
       if(nrPage != null)
         query += '?page_nr='+nrPage;
       if(angle != 0)
         query += '&angle='+angle;
+      if(maxWidth > 0)
+        query += '&max_width='+maxWidth;
+      if(minHeight > 0)
+        query += '&max_height='+minHeight;
       return this.http.get(this.urlPrefix.imageDocument + this.urlDocument+ query, {responseType: 'blob'});
     }
 
-    /** SET url document from the document */
+    /** Download the document */
+    downloadDocument(){
+      return this.http.get(this.urlPrefix.downloadDocument + this.urlDocument, {responseType: 'blob'});
+    }
+
+    /** SET url document from the document for the service */
     setUrlDocument(url: string){
       this.urlDocument = url;
     }

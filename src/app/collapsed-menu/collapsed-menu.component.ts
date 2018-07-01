@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, Input, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { trigger,state,style,transition,animate } from '@angular/animations';
 import { NzTreeNode } from 'ng-zorro-antd';
 import { DocumentService } from '../document.service';
@@ -22,8 +22,8 @@ import { Menu } from '../menu.enum';
 })
 export class CollapsedMenuComponent implements OnInit {
 
-  @Output() toggleMenu = new EventEmitter();
   @Output() pageChanged = new EventEmitter();
+  
 
   inputValue: string = "";
   collapsed: boolean = false ;
@@ -36,38 +36,22 @@ export class CollapsedMenuComponent implements OnInit {
   sizeResultsSearch: number = 0;
   loading = false;
   hasMore = true;
-  
+  urlDownload: string;
+
   constructor(private documentService:DocumentService) { }
 
-  ngOnInit() {
-    
+  ngOnInit(){
+
   }
 
   collapse(e:Menu) {
     this.dispatchMenu(e)
     if(this.actualMenu == 99)
       this.actualMenu = e;
-    if(e != Menu.AfficherMenu && e != Menu.Telecharger){
-      if(this.actualMenu == e || !this.collapsed && this.actualMenu != e){
-        this.collapsed = !this.collapsed;
-      }
-    }
-    else{
-      if(e == Menu.AfficherMenu)
-        this.toggleBottomMenu();
-      else if(e == Menu.Telecharger)
-        this.downloadFile();
-      this.collapsed = false; 
+    if(this.actualMenu == e || !this.collapsed && this.actualMenu != e){
+      this.collapsed = !this.collapsed;
     }
     this.actualMenu = e;
-  }
-
-  toggleBottomMenu(){
-    this.toggleMenu.emit();
-  }
-
-  downloadFile(){
-
   }
 
   mouseActionMenu(e: any): void {

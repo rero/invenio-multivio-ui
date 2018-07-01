@@ -10,16 +10,47 @@
           </ng-template>   
       </div>
       <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed" >
-        <li (click)="onMenuClick(Menu.Recherche)" nz-menu-item><span><i class="anticon anticon-search"></i><span class="nav-text">Recherche</span></span></li>
-        <li (click)="onMenuClick(Menu.Structure)" nz-menu-item><span><i class="anticon anticon-bars"></i><span class="nav-text">Structure</span></span></li>
-        <li (click)="onMenuClick(Menu.Miniatures)" nz-menu-item><span><i class="anticon anticon-switcher"></i><span class="nav-text">Miniatures</span></span></li>
-        <li (click)="onMenuClick(Menu.Telecharger)" nz-menu-item><span><i class="anticon anticon-download"></i><span class="nav-text">Télécharger</span></span></li>
-        <li (click)="onMenuClick(Menu.AfficherMenu)" nz-menu-item><span><i class="anticon anticon-minus-square-o"></i><span class="nav-text">Afficher menu</span></span></li>
-        <li (click)="onMenuClick(Menu.Aide)" nz-menu-item><span><i class="anticon anticon-question-circle-o"></i><span class="nav-text">Aide</span></span></li>
+        <li (click)="onMenuClick(Menu.Recherche)" nz-menu-item>
+          <span>
+            <i class="anticon anticon-search"></i>
+            <span class="nav-text">Recherche</span>
+          </span>
+        </li>
+        <li (click)="onMenuClick(Menu.Structure)" nz-menu-item>
+          <span>
+            <i class="anticon anticon-bars"></i>
+            <span class="nav-text">Structure</span>
+          </span>
+        </li>
+        <li (click)="onMenuClick(Menu.Miniatures)" nz-menu-item>
+          <span><i class="anticon anticon-switcher"></i>
+            <span class="nav-text">Miniatures</span>
+          </span>
+        </li>
+        <li (click)="onMenuClick(Menu.Telecharger)" nz-menu-item>
+          <a [href]="fileDownload" download="file.pdf">
+            <span>
+              <i class="anticon anticon-download"></i>
+              <span class="nav-text">Télécharger</span>
+            </span>
+          </a>
+        </li>
+        <li (click)="onMenuClick(Menu.AfficherMenu)" nz-menu-item>
+          <span>
+            <i class="anticon anticon-minus-square-o"></i>
+            <span class="nav-text">Afficher menu</span>
+          </span>
+        </li>
+        <li (click)="onMenuClick(Menu.Aide)" nz-menu-item>
+            <span>
+              <i class="anticon anticon-question-circle-o"></i>
+              <span class="nav-text">Aide</span>
+            </span>
+        </li>
       </ul>
     </nz-sider>
-    <app-collapsed-menu (toggleMenu)='toggleBottomMenu()' (pageChanged)='updatePage($event, 0)'></app-collapsed-menu>
-    <nz-layout>
+    <app-collapsed-menu (pageChanged)='updatePage($event, 0)'></app-collapsed-menu>
+    <nz-layout (resized)="onResized($event)">
       <nz-header style="background: #f0f2f5; padding:0;">
         <h3 style="text-align: center">{{title}}</h3>
         <h4 style="text-align: center; margin-top: -50px">{{creator}}</h4>
@@ -30,6 +61,8 @@
         </div>
       </nz-content>
       <app-bottom-menu (pageChanged)='updatePage($event)'></app-bottom-menu>
-      <nz-footer style="text-align: center;">Powered by <a href="http://invenio-software.org/" target="_blank">Invenio</a>  / © Copyright <a href="http://www.rero.ch/">RERO</a></nz-footer>
+      <nz-footer style="text-align: center;">Powered by 
+        <a href="http://invenio-software.org/" target="_blank">Invenio</a>  / © Copyright <a href="http://www.rero.ch/">RERO</a>
+      </nz-footer>
     </nz-layout>
   </nz-layout>
