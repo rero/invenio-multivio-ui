@@ -62,15 +62,12 @@ export class BottomMenuComponent implements OnInit {
           this.typeDisplay = Display.ZoomIn;
           break; 
         case BottomMenu.FitToHeight:
-          console.log("FitToHeight");
           this.typeDisplay = Display.FitToHeight;
           break;   
         case BottomMenu.FitToWidth:
-          console.log("FitToWidth");
           this.typeDisplay = Display.FitToWidth;
           break;   
         case BottomMenu.OriginalSize:
-          console.log("OriginalSize");
           this.typeDisplay = Display.OriginalSize;
           break;    
       }

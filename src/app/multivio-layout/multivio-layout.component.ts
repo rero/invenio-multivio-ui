@@ -35,6 +35,8 @@ export class MultivioLayoutComponent implements OnInit {
   contentWidth: number = 0;
   maxHeight: number = 0; 
   maxWidth: number = 0;
+  originalHeight: number = 0;
+  originalWidth: number = 0;
   currentPage: number= 1;
   anglePage: number = 0;
   firstRendering: boolean = false;
@@ -72,35 +74,28 @@ export class MultivioLayoutComponent implements OnInit {
     this.anglePage = event["Angle"]
     switch (event["Display"]) {
       case Display.ZoomIn:
-        console.log("Display.ZoomIn");
         this.contentWidth = Math.round(this.contentWidth +  this.contentWidth / 100 * 20)
         this.contentHeight = Math.round(this.contentHeight +  this.contentHeight / 100 * 20)
         break;
       case Display.ZoomOut:
-        console.log("Display.ZoomOut");
         this.contentWidth = Math.round(this.contentWidth -  this.contentWidth / 100 * 20)
         this.contentHeight = Math.round(this.contentHeight -  this.contentHeight / 100 * 20)  
         break;
       case Display.FitToWidth:
-        console.log("Display.FitToWidth");
         this.contentWidth = this.maxWidth;
-        this.contentHeight = 0;
+        this.contentHeight = this.maxWidth * 2;
         break;
       case Display.FitToHeight:
-        console.log("Display.FitToHeight");
         this.contentHeight = this.maxHeight;
-        this.contentWidth = 0;
+        this.contentWidth = this.maxHeight;
         break;
       case Display.OriginalSize:
-        console.log("Display.OriginalSize");
-        this.contentWidth = 0
-        this.contentHeight = 0
+        this.contentWidth = this.originalWidth;
+        this.contentHeight = this.originalHeight;
         break;
       
     }
-    console.log(this.maxHeight);
-    
-    console.log(this.maxWidth);
+
     
     this.getImage(this.currentPage, this.anglePage, this.contentWidth, this.contentHeight);
   }
@@ -119,6 +114,9 @@ export class MultivioLayoutComponent implements OnInit {
 
       this.documentService.setMaxPageDocument(res['nPages']);
       this.bottomMenuComponent.maxValuePage = this.documentService.getMaxPageDocument();
+      this.originalHeight = Math.round(res['nativeSize'][1][1]);
+      this.originalWidth  = Math.round(res['nativeSize'][1][0]);
+      
     });
   }
 
@@ -155,14 +153,15 @@ export class MultivioLayoutComponent implements OnInit {
 
   onResized(event: ResizedEvent): void {  //TODO resize? 
     if( event.newWidth > 0 &&  event.newHeight > 0 && !this.firstRendering){
-      this.maxWidth = event.newWidth ; 
       this.contentWidth = event.newWidth ;
-      this.maxHeight = event.newHeight - 230;
       this.contentHeight = event.newHeight - 230;
       console.log("Width2: "+this.contentWidth+" \nHeight2: "+this.contentHeight);
       this.firstRendering = true;
       this.getImage(this.currentPage, this.anglePage, this.contentWidth, this.contentHeight);
     }
+    this.maxWidth = event.newWidth - 100;
+    this.maxHeight = event.newHeight - 230;
+    console.log("MaxWidth: "+this.maxWidth+" \MaxHeight: "+this.maxHeight);
   }
 
   
