@@ -1,5 +1,6 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { BottomMenu } from '../bottom-menu.enum';
+import { Display } from '../display.enum';
 import { NzMessageService } from 'ng-zorro-antd';
 
 @Component({
@@ -16,10 +17,11 @@ export class BottomMenuComponent implements OnInit {
   minValuePage: number = 1;
   maxValuePage: number = 0;
   currentAngle: number = 0;
-  zoom: string;
+  typeDisplay: number;
   BottomMenu = BottomMenu;
 
-  constructor(private message: NzMessageService) { }
+  constructor(private message: NzMessageService) { 
+  }
 
   ngOnInit() {
   }
@@ -45,7 +47,7 @@ export class BottomMenuComponent implements OnInit {
           }
           break;
         case BottomMenu.LastPage:
-          this.currentPage = this.maxValuePage
+          this.currentPage = this.maxValuePage;
           break;
         case BottomMenu.RotateLeft:
           this.currentAngle = (this.currentAngle + 90)%360;
@@ -54,22 +56,30 @@ export class BottomMenuComponent implements OnInit {
           this.currentAngle = (this.currentAngle - 90)%360;
           break;
         case BottomMenu.ZoomOut:
-          this.zoom = "zoomOut"
+          this.typeDisplay = Display.ZoomOut;
           break;
         case BottomMenu.ZoomIn:
-          this.zoom = "zoomIn"
+          this.typeDisplay = Display.ZoomIn;
+          break; 
+        case BottomMenu.FitToHeight:
+          console.log("FitToHeight");
+          this.typeDisplay = Display.FitToHeight;
+          break;   
+        case BottomMenu.FitToWidth:
+          console.log("FitToWidth");
+          this.typeDisplay = Display.FitToWidth;
+          break;   
+        case BottomMenu.OriginalSize:
+          console.log("OriginalSize");
+          this.typeDisplay = Display.OriginalSize;
           break;    
       }
-      this.pageChanged.emit({"Page":this.currentPage,"Angle": this.currentAngle,"Zoom": this.zoom});
-      this.zoom=""
+      this.pageChanged.emit({"Page":this.currentPage,"Angle": this.currentAngle,"Display": this.typeDisplay});
+      this.typeDisplay=-1
     }
     else{
       this.message.create('warning', `Vous avez insérez un nombre qui n'est pas compri entre : ${this.minValuePage} et ${this.maxValuePage} `);
     }
-  }
-
-  setMaxPage(max: number){
-    this.maxValuePage = max;
   }
 
   getPage(nrPage: number){
@@ -84,8 +94,6 @@ export class BottomMenuComponent implements OnInit {
       this.message.create('warning', `Vous avez insérez un nombre supérieur au maximum consenti ( ${this.maxValuePage} )`);
       this.currentPage = this.maxValuePage;
     }
-    this.pageChanged.emit({"Page":this.currentPage,"Angle": this.currentAngle,"Zoom": this.zoom});
-    
+    this.pageChanged.emit({"Page":this.currentPage,"Angle": this.currentAngle,"Display": this.typeDisplay});
   }
-
 }

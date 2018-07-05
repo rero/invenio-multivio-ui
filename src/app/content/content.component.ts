@@ -1,4 +1,4 @@
-import { Component, Output, OnInit, EventEmitter } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-content',
@@ -9,11 +9,7 @@ import { Component, Output, OnInit, EventEmitter } from '@angular/core';
 export class ContentComponent implements OnInit {
 
   imageToShow: Blob ;
-  contentHeight: number;
-  contentWidth: number;
-  positionLeft: string;
-  positionTop : string; 
-
+  
   constructor() { }
 
   ngOnInit() {

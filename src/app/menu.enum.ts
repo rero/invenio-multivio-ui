@@ -1,8 +1,8 @@
 export enum Menu {
-    Recherche,
-    Structure,
-    Miniatures,
-    Telecharger,
-    AfficherMenu,
-    Aide
+    Find,
+    TOC,
+    ThumbPreview,
+    Download,
+    BottomMenuVisible,
+    Help
 }

@@ -1,9 +1,16 @@
-<div id="subMenu"  [@collapseAnimation]='collapsed'>
-    <div [ngSwitch]="actualMenu">
-        <ng-container *ngSwitchCase="Menu.Recherche">
+ <div [@collapseAnimation]='collapsed' style="height:100%">
+    <div *ngIf="actualMenu == Menu.ThumbPreview" style="height: 5%;">
+        <div style="background-color: #343942e0; height: 100%;">
+            <i (click)="modeView('list')" nz-tooltip nzTitle="Liste" nzPlacement="bottom" class="fa fa-th-list myIcons" style="left: 20%;position: relative;"></i>
+            <i (click)="modeView('grid')" nz-tooltip nzTitle="Grille" nzPlacement="bottom" class="fa fa-th myIcons" style="left: 45%;position: relative;"></i>
+        </div>
+    </div>
+        
+    <div [ngSwitch]="actualMenu" id="subMenu" [ngStyle]="{ 'height' : (actualMenu == Menu.ThumbPreview) ? '95%' : '100%' }">
+        <ng-container *ngSwitchCase="Menu.Find">
             <div id="searchDoc">
                 <nz-input-group nzSearch [nzSuffix]="suffixIconButton">
-                <input type="text" nz-input placeholder="Chercher" #inputSearch (keyup.enter)="getInputSearch(inputSearch.value)" [(ngModel)]="inputValue">
+                    <input type="text" nz-input placeholder="Chercher" #inputSearch (keyup.enter)="getInputSearch(inputSearch.value)" [(ngModel)]="inputValue">
                 </nz-input-group>
                 <ng-template #suffixIconButton>
                     <button nz-button nzType="primary" nzSearch (click) = "getInputSearch(inputSearch.value)"><i class="anticon anticon-search"></i></button>
@@ -14,21 +21,50 @@
                         <i class="anticon anticon-close cancelResults" (click) = "clearResults()"></i>
                     </div> 
                     <ul *ngFor="let result of resultsSearch">
-                        <li (click) = "getPage(result.page)">{{result.text}}</li>
+                        <li [innerHTML]=result.text style="padding: 3px" (click) = "getPage(result.page)"></li>
                     </ul>
                 </div>
-                    
             </div>
         </ng-container>
-        <ng-container *ngSwitchCase="Menu.Structure">
-            <nz-tree [(ngModel)]="nodes"
+        <ng-container *ngSwitchCase="Menu.TOC">
+            <nz-tree [(ngModel)]="nodesTOC"
                 [nzShowLine]="false"
                 [nzDefaultExpandAll]="true" 
                 (nzClick)="mouseActionMenu($event)">
             </nz-tree>
         </ng-container>
-        <ng-container *ngSwitchCase="Menu.Aide">
-            <div class="colorText">
+        <ng-container *ngSwitchCase="Menu.ThumbPreview">
+            <div [ngSwitch]="modeViewThumb">
+                <ng-container *ngSwitchCase="'list'">
+                    <div *ngFor="let thumb of thumbList; let i = index" style="margin-top: 25px">
+                        <img inViewport
+                            id={{i+1}}
+                            (inViewportAction)="onIntersection($event)" 
+                            src="{{ thumb }}" style="margin: auto; display: block;cursor: pointer;"
+                            (click)="thumbSelected(i+1)"
+                        />
+                        <p style="text-align: center; color:rgba(255,255,255,.65);">{{ i+1 }}</p>
+                    </div>
+                </ng-container>
+                <ng-container *ngSwitchCase="'grid'">
+                    <div class="grid-container">
+                        <div *ngFor="let thumb of thumbList; let i = index" style="margin-top: 25px">
+                            <div class="grid-item">
+                                <img inViewport
+                                    id={{i+1}}
+                                    (inViewportAction)="onIntersection($event)" 
+                                    src="{{ thumb }}" style="margin: auto; display: block;cursor: pointer; width:100%;"
+                                    (click)="thumbSelected(i+1)"
+                                />
+                                <p style="text-align: center; color:rgba(255,255,255,.65);">{{ i+1 }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </ng-container>
+        <ng-container *ngSwitchCase="Menu.Help">
+            <div class="colorText" >
                 <h1 class="colorText">Aide</h1>
                 Multivio permet de visualiser des contenus numériques, qu'il s'agisse de documents (par ex. livres, articles) ou
                 d'images (par ex. photos, gravures). 
@@ -37,4 +73,6 @@
 
         
     </div>
-</div>
+    
+ </div>
+    

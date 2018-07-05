@@ -10,3 +10,13 @@
 .ant-tree li .ant-tree-node-content-wrapper.ant-tree-node-selected {
     background-color: transparent;
 }
+
+
+.myIcons{
+    color: white;
+    opacity: 0.8;
+    font-size:24px;
+    float: left;
+    padding: 10px;
+    cursor: pointer;
+}

@@ -24,24 +24,26 @@ export class CollapsedMenuComponent implements OnInit {
 
   @Output() pageChanged = new EventEmitter();
   
-
+  Menu = Menu;
   inputValue: string = "";
   collapsed: boolean = false ;
-  nodes: Array<Object> = [];
+  nodesTOC: Array<Object> = [];
   counter: number = 0;
   actualMenu: number = 99;
-  Menu = Menu;
   infoTocRetrieved: boolean = false;
+  thumbnailsRetrieved: boolean = false;
   resultsSearch: any[] = [];
+  thumbList: any[] = [];
   sizeResultsSearch: number = 0;
-  loading = false;
-  hasMore = true;
-  urlDownload: string;
+  thumbListMaxIndex: number = 8;
+  modeViewThumb: string = 'list'
 
-  constructor(private documentService:DocumentService) { }
+  constructor(private documentService:DocumentService) {
+    
+  }
 
   ngOnInit(){
-
+    
   }
 
   collapse(e:Menu) {
@@ -78,7 +80,7 @@ export class CollapsedMenuComponent implements OnInit {
 
   dispatchMenu(option: number):void {
     switch (option) {
-      case Menu.Structure:
+      case Menu.TOC:
         if(!this.infoTocRetrieved){
           this.documentService.getTOC()
           .subscribe(res => {
@@ -89,12 +91,23 @@ export class CollapsedMenuComponent implements OnInit {
                 page: res[i]['file_position']['index']
               }
               this.asChildren(res[i], a);
-              this.nodes.push(new NzTreeNode(a));
+              this.nodesTOC.push(new NzTreeNode(a));
             }
             this.infoTocRetrieved = true;
           });
         }
-        break;  
+        break;
+      case Menu.ThumbPreview: 
+        if(!this.thumbnailsRetrieved){
+          if(this.thumbListMaxIndex > this.documentService.getMaxPageDocument()){
+            this.thumbListMaxIndex = this.documentService.getMaxPageDocument()
+          }
+          for (let page = 1; page <= this.thumbListMaxIndex; page++) { 
+             this.getThumbImages(page);
+          } 
+          this.thumbnailsRetrieved = true;
+        }
+        break;
       default:
         break;
     }
@@ -105,7 +118,7 @@ export class CollapsedMenuComponent implements OnInit {
     .subscribe(res => {
       this.sizeResultsSearch = res.length;
       this.resultsSearch = res;
-      for(let i = 0; i<res.length; i++){   //TODO
+      for(let i = 0; i<res.length; i++){   
         let startString = this.resultsSearch[i]["text"];
         let endString = startString.replace(input, '<b>'+input+'</b>')
         this.resultsSearch[i]["text"] = endString;    
@@ -120,6 +133,37 @@ export class CollapsedMenuComponent implements OnInit {
   clearResults(){ 
     this.resultsSearch = [];
     this.inputValue = null;
+  }
+
+  onIntersection(event : any) {
+    if(event.target.id == this.thumbListMaxIndex 
+        && event.visible == true 
+        && this.thumbListMaxIndex < this.documentService.getMaxPageDocument()){
+      this.thumbListMaxIndex++;
+      this.getThumbImages(this.thumbListMaxIndex);
+    }
+  }
+
+  getThumbImages(page: number){
+    this.documentService.getImageFromPage(page,0,150,150)
+      .subscribe(thumb => {
+        let reader = new FileReader();
+        reader.addEventListener("load", () => {
+            this.thumbList.push(reader.result);
+          }, false
+        );
+        if (thumb) {
+          reader.readAsDataURL(thumb);
+        }
+      });
+  }
+
+  thumbSelected(page: number){
+    this.getPage(page); 
+  }
+
+  modeView(mode: string){
+    this.modeViewThumb = mode;
   }
 
 }

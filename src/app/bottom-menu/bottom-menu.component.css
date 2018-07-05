@@ -3,13 +3,13 @@
     border-radius: 25px;
     opacity: 0;  
     transition: 2s;
-    width: 440px;
+    width: 600px;
     height: 44px;
     margin: auto;
 }
 
 #affix{
-    width: 440px;
+    width: 600px;
     height: 44px;
     margin: auto;
 }
@@ -24,13 +24,4 @@
 #bottomMenu:hover{
     opacity: 0.8;
     transition: 0.4s;
-}
-
-.myIcons{
-    color: white;
-    opacity: 0.8;
-    font-size:24px;
-    float: left;
-    padding: 10px;
-    cursor: pointer;
 }

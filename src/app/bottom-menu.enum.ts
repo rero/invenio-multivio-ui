@@ -6,5 +6,8 @@ export enum BottomMenu {
     IncrementPage,
     LastPage,
     ZoomIn,
-    ZoomOut
+    ZoomOut, 
+    FitToHeight,
+    FitToWidth,
+    OriginalSize
 }

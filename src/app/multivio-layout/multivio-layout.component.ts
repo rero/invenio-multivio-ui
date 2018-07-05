@@ -5,6 +5,7 @@ import { ContentComponent } from '../content/content.component';
 import { DocumentService } from '../document.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Menu } from '../menu.enum';
+import { Display } from '../display.enum';
 import { ResizedEvent } from 'angular-resize-event/resized-event';  //TODO: put to layout?
 
 @Component({
@@ -30,11 +31,10 @@ export class MultivioLayoutComponent implements OnInit {
   width: number  = 200;
   title: string = "";
   creator: string = "";
-  imageToShow: Blob;
-  fileDownload;
-
   contentHeight: number = 0; 
   contentWidth: number = 0;
+  maxHeight: number = 0; 
+  maxWidth: number = 0;
   currentPage: number= 1;
   anglePage: number = 0;
   firstRendering: boolean = false;
@@ -44,17 +44,22 @@ export class MultivioLayoutComponent implements OnInit {
   ngOnInit() {
     this.documentService.setUrlDocument(this.urlDocument);
     this.loadMetadata();
-    //this.getImage(this.currentPage, this.anglePage, this.contentWidth, this.contentHeight);
   }
 
   onMenuClick(e:Menu) {
-    if(e != Menu.AfficherMenu && e != Menu.Telecharger){
+    if(e != Menu.BottomMenuVisible && e != Menu.Download){
       this.collapsedMenuComponent.collapse(e);
     }
-    if(e == Menu.AfficherMenu)
-        this.toggleBottomMenu();
-      else if(e == Menu.Telecharger)
-        this.downloadFile();
+    else{
+      switch (e) {
+        case Menu.BottomMenuVisible:
+          this.toggleBottomMenu();
+          break;
+        case Menu.Download:
+          this.downloadFile();
+          break;
+      }
+    }
   }
 
   toggleBottomMenu(){
@@ -65,14 +70,38 @@ export class MultivioLayoutComponent implements OnInit {
     this.bottomMenuComponent.currentPage = event["Page"];
     this.currentPage = event["Page"]
     this.anglePage = event["Angle"]
-    if(event["Zoom"] == "zoomIn"){
-      this.contentWidth = Math.round(this.contentWidth +  this.contentWidth / 100 * 20)
-      this.contentHeight = Math.round(this.contentHeight +  this.contentHeight / 100 * 20)
+    switch (event["Display"]) {
+      case Display.ZoomIn:
+        console.log("Display.ZoomIn");
+        this.contentWidth = Math.round(this.contentWidth +  this.contentWidth / 100 * 20)
+        this.contentHeight = Math.round(this.contentHeight +  this.contentHeight / 100 * 20)
+        break;
+      case Display.ZoomOut:
+        console.log("Display.ZoomOut");
+        this.contentWidth = Math.round(this.contentWidth -  this.contentWidth / 100 * 20)
+        this.contentHeight = Math.round(this.contentHeight -  this.contentHeight / 100 * 20)  
+        break;
+      case Display.FitToWidth:
+        console.log("Display.FitToWidth");
+        this.contentWidth = this.maxWidth;
+        this.contentHeight = 0;
+        break;
+      case Display.FitToHeight:
+        console.log("Display.FitToHeight");
+        this.contentHeight = this.maxHeight;
+        this.contentWidth = 0;
+        break;
+      case Display.OriginalSize:
+        console.log("Display.OriginalSize");
+        this.contentWidth = 0
+        this.contentHeight = 0
+        break;
+      
     }
-    else if(event["Zoom"] == "zoomOut"){
-      this.contentWidth = Math.round(this.contentWidth -  this.contentWidth / 100 * 20)
-      this.contentHeight = Math.round(this.contentHeight -  this.contentHeight / 100 * 20)
-    } 
+    console.log(this.maxHeight);
+    
+    console.log(this.maxWidth);
+    
     this.getImage(this.currentPage, this.anglePage, this.contentWidth, this.contentHeight);
   }
 
@@ -87,17 +116,18 @@ export class MultivioLayoutComponent implements OnInit {
         this.creator = " ";
       else
         this.creator = res['creator'];
-      this.bottomMenuComponent.setMaxPage(res['nPages']);
+
+      this.documentService.setMaxPageDocument(res['nPages']);
+      this.bottomMenuComponent.maxValuePage = this.documentService.getMaxPageDocument();
     });
   }
 
   createImageFromBlob(image: Blob) {
     let reader = new FileReader();
     reader.addEventListener("load", () => {
-       this.imageToShow = reader.result;
-       this.contentComponent.setImage(this.imageToShow);
-    }, false);
- 
+        this.contentComponent.setImage(reader.result);
+      }, false
+    );
     if (image) {
        reader.readAsDataURL(image);
     }
@@ -110,22 +140,26 @@ export class MultivioLayoutComponent implements OnInit {
   }
 
   downloadFile(){
-    console.log("Download");
-    this.documentService.downloadDocument().subscribe(blob => {
-      const data = 'some text';
-      const blob2 = new Blob([data], { type: 'application/octet-stream' });
-      this.fileDownload = this.sanitizer.bypassSecurityTrustResourceUrl(window.URL.createObjectURL(blob2));
-      //this.fileDownload = this.sanitizer.bypassSecurityTrustResourceUrl(window.URL.createObjectURL(blob));
+    this.documentService.downloadDocument().subscribe(res => {
+      var url = window.URL.createObjectURL(res);    
+      var a = document.createElement('a');
+      document.body.appendChild(a);
+      a.setAttribute('style', 'display: none');
+      a.href = url;
+      a.download = this.title;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
     });
-    
   }
 
   onResized(event: ResizedEvent): void {  //TODO resize? 
-    this.contentWidth = event.newWidth ;
-    this.contentHeight = event.newHeight - 230;
-
-    if( this.contentWidth > 0 &&  this.contentHeight > 0 && !this.firstRendering){
-      console.log("Width: "+this.contentWidth+" \nHeight: "+this.contentHeight);
+    if( event.newWidth > 0 &&  event.newHeight > 0 && !this.firstRendering){
+      this.maxWidth = event.newWidth ; 
+      this.contentWidth = event.newWidth ;
+      this.maxHeight = event.newHeight - 230;
+      this.contentHeight = event.newHeight - 230;
+      console.log("Width2: "+this.contentWidth+" \nHeight2: "+this.contentHeight);
       this.firstRendering = true;
       this.getImage(this.currentPage, this.anglePage, this.contentWidth, this.contentHeight);
     }

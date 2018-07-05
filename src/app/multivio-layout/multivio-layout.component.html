@@ -10,38 +10,36 @@
           </ng-template>   
       </div>
       <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed" >
-        <li (click)="onMenuClick(Menu.Recherche)" nz-menu-item>
+        <li (click)="onMenuClick(Menu.Find)" nz-menu-item>
           <span>
             <i class="anticon anticon-search"></i>
             <span class="nav-text">Recherche</span>
           </span>
         </li>
-        <li (click)="onMenuClick(Menu.Structure)" nz-menu-item>
+        <li (click)="onMenuClick(Menu.TOC)" nz-menu-item>
           <span>
             <i class="anticon anticon-bars"></i>
             <span class="nav-text">Structure</span>
           </span>
         </li>
-        <li (click)="onMenuClick(Menu.Miniatures)" nz-menu-item>
+        <li (click)="onMenuClick(Menu.ThumbPreview)" nz-menu-item>
           <span><i class="anticon anticon-switcher"></i>
             <span class="nav-text">Miniatures</span>
           </span>
         </li>
-        <li (click)="onMenuClick(Menu.Telecharger)" nz-menu-item>
-          <a [href]="fileDownload" download="file.pdf">
-            <span>
-              <i class="anticon anticon-download"></i>
-              <span class="nav-text">Télécharger</span>
-            </span>
-          </a>
+        <li (click)="onMenuClick(Menu.Download)" nz-menu-item>
+          <span>
+            <i class="anticon anticon-download"></i>
+            <span class="nav-text">Télécharger</span>
+          </span>
         </li>
-        <li (click)="onMenuClick(Menu.AfficherMenu)" nz-menu-item>
+        <li (click)="onMenuClick(Menu.BottomMenuVisible)" nz-menu-item>
           <span>
             <i class="anticon anticon-minus-square-o"></i>
             <span class="nav-text">Afficher menu</span>
           </span>
         </li>
-        <li (click)="onMenuClick(Menu.Aide)" nz-menu-item>
+        <li (click)="onMenuClick(Menu.Help)" nz-menu-item>
             <span>
               <i class="anticon anticon-question-circle-o"></i>
               <span class="nav-text">Aide</span>
@@ -49,7 +47,7 @@
         </li>
       </ul>
     </nz-sider>
-    <app-collapsed-menu (pageChanged)='updatePage($event, 0)'></app-collapsed-menu>
+    <app-collapsed-menu (pageChanged)='updatePage($event)'></app-collapsed-menu>
     <nz-layout (resized)="onResized($event)">
       <nz-header style="background: #f0f2f5; padding:0;">
         <h3 style="text-align: center">{{title}}</h3>
