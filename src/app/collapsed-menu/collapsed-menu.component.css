@@ -63,10 +63,10 @@ li:hover {
 
 .grid-container {
     display: grid;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: 90px 90px 90px;
     padding: 10px;
-  }
-  .grid-item {
+}
+.grid-item {
     padding: 20px;
     text-align: center;
-  }
+}

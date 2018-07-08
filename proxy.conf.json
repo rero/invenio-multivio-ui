@@ -1,11 +1,11 @@
 {
-  "/api-xml/*": {
+  "/api-json/*": {
     "target": "http://localhost:5000",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true,
     "pathRewrite": {
-      "^/api-xml": "http://localhost:5000/api-xml"
+      "^/api-json": "http://localhost:5000/api-json"
     }
   },
   "/api-pdf/*": {
@@ -15,6 +15,24 @@
     "changeOrigin": true,
     "pathRewrite": {
       "^/api-pdf": "http://localhost:5000/api-pdf"
+    }
+  },
+  "/api-image/*": {
+    "target": "http://localhost:5000",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api-image": "http://localhost:5000/api-image"
+    }
+  },
+  "/api-xml/*": {
+    "target": "http://localhost:5000",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api-xml": "http://localhost:5000/api-xml"
     }
   }
 }

@@ -2,33 +2,33 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UrlPrefixService } from './url-prefix.service';
 import { HttpClient, } from '@angular/common/http';
+import { ImageService } from './image.service';
 
 @Injectable()
 
-export class DocumentService {
+export class DocumentService extends ImageService{
 
-  private urlDocument: string = '';
-  private maxPagesDocument: number = 0;
-
-  constructor(private http: HttpClient, private urlPrefix: UrlPrefixService) { }
+  constructor(protected http: HttpClient, protected urlPrefix: UrlPrefixService) { 
+    super(http, urlPrefix);
+  }
 
   /** GET toc from the document */
   getTOC(): Observable<Object[]> {
-    return this.http.get<Object[]>(this.urlPrefix.tocDocument + this.urlDocument);
+    return this.http.get<Object[]>(this.urlPrefix.tocDocument + this.urlCurrentObject);
   }
 
   /** GET find text from the document */
   findText(text: string): Observable<Object[]>{
-    return this.http.get<Object[]>(this.urlPrefix.findText + this.urlDocument + '?string='+text);
+    return this.http.get<Object[]>(this.urlPrefix.findTextDocument + this.urlCurrentObject + '?string='+text);
   }
 
   /** GET metadata from the document */
-  getMetadata(): Observable<Object[]> {
-    return this.http.get<Object[]>(this.urlPrefix.metadataDocument + this.urlDocument);
+  getMetadataDocument(): Observable<Object[]> {
+    return this.http.get<Object[]>(this.urlPrefix.metadataDocument + this.urlCurrentObject);
   }
 
   /** GET metadata from the document */
-  getImageFromPage(nrPage: number, angle: number, maxWidth: number, minHeight:number): Observable<Blob> {
+  getImageFromDocument(nrPage: number, angle: number, maxWidth: number, minHeight:number): Observable<Blob> {
     let query = "";
     if(nrPage != null)
       query += '?page_nr='+nrPage;
@@ -38,35 +38,11 @@ export class DocumentService {
       query += '&max_width='+maxWidth;
     if(minHeight > 0)
       query += '&max_height='+minHeight;
-    return this.http.get(this.urlPrefix.imageDocument + this.urlDocument+ query, {responseType: 'blob'});
+    return this.http.get(this.urlPrefix.imageDocument + this.urlCurrentObject+ query, {responseType: 'blob'});
   }
 
   /** Download the document */
   downloadDocument(){
-    return this.http.get(this.urlPrefix.downloadDocument + this.urlDocument, {responseType: 'blob'});
+    return this.http.get(this.urlPrefix.downloadDocument + this.urlCurrentObject, {responseType: 'blob'});
   }
-
-  /** SET url document from the document for the service */
-  setUrlDocument(url: string){
-    this.urlDocument = url;
-  }
-
-  /** GET url document from the document for the service */
-  getUrlDocument(): string{
-    return this.urlDocument;
-  }
-
-  /** SET max page document */
-  setMaxPageDocument(pages: number){
-    this.maxPagesDocument = pages;
-  }
-
-  /** GET max page document */
-  getMaxPageDocument(): number{
-    return this.maxPagesDocument;
-  }
-
-
-
-    
 }

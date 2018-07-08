@@ -25,3 +25,8 @@
     opacity: 0.8;
     transition: 0.4s;
 }
+
+.notSelectable{
+    color:#fafafa1f !important; 
+    cursor: unset !important; 
+}

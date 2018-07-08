@@ -2,7 +2,10 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { trigger,state,style,transition,animate } from '@angular/animations';
 import { NzTreeNode } from 'ng-zorro-antd';
 import { DocumentService } from '../document.service';
-import { Menu } from '../menu.enum';
+import { Menu } from '../enum/menu.enum';
+import { Type } from '../enum/type.enum';
+import { logging } from 'protractor';
+import { METHODS } from 'http';
 
 @Component({
   selector: 'app-collapsed-menu',
@@ -23,7 +26,7 @@ import { Menu } from '../menu.enum';
 export class CollapsedMenuComponent implements OnInit {
 
   @Output() pageChanged = new EventEmitter();
-  
+
   Menu = Menu;
   inputValue: string = "";
   collapsed: boolean = false ;
@@ -37,29 +40,32 @@ export class CollapsedMenuComponent implements OnInit {
   sizeResultsSearch: number = 0;
   thumbListMaxIndex: number = 8;
   modeViewThumb: string = 'list'
+  typeObject: string ;
 
-  constructor(private documentService:DocumentService) {
-    
-  }
+  constructor(private documentService:DocumentService) { }
 
-  ngOnInit(){
-    
-  }
+  ngOnInit(){ }
 
-  collapse(e:Menu) {
+  //Display or hide the menu
+  collapse(e: Menu, type: string) {
+    this.typeObject = type;
+    //Dipatch the action on click
     this.dispatchMenu(e)
     if(this.actualMenu == 99)
       this.actualMenu = e;
+    //Diplay, hide collapsed menu
     if(this.actualMenu == e || !this.collapsed && this.actualMenu != e){
       this.collapsed = !this.collapsed;
     }
     this.actualMenu = e;
   }
 
-  mouseActionMenu(e: any): void {
-    this.getPage(e.node.origin.page);
+  //Display the page from TOC
+  onClickTree(e: any): void {
+    this.getPage(e.node.origin.page, e.node.origin.doc);
   }
 
+  //Check if node as children's (recursive)
   asChildren (val: Object, node: Object){
     if(val.hasOwnProperty('childs'))
     { 
@@ -78,41 +84,83 @@ export class CollapsedMenuComponent implements OnInit {
     }
   }
 
+  //Dipachch click menu to correct fonctionality
   dispatchMenu(option: number):void {
     switch (option) {
       case Menu.TOC:
-        if(!this.infoTocRetrieved){
-          this.documentService.getTOC()
-          .subscribe(res => {
-            for (let i = 0; i < res.length; i++) {
-              let a = {
-                title : res[i]['label'],
-                key : (this.counter++).toString(),
-                page: res[i]['file_position']['index']
-              }
-              this.asChildren(res[i], a);
-              this.nodesTOC.push(new NzTreeNode(a));
-            }
-            this.infoTocRetrieved = true;
-          });
-        }
+        this.getTOC();
         break;
       case Menu.ThumbPreview: 
-        if(!this.thumbnailsRetrieved){
-          if(this.thumbListMaxIndex > this.documentService.getMaxPageDocument()){
-            this.thumbListMaxIndex = this.documentService.getMaxPageDocument()
-          }
-          for (let page = 1; page <= this.thumbListMaxIndex; page++) { 
-             this.getThumbImages(page);
-          } 
-          this.thumbnailsRetrieved = true;
-        }
-        break;
-      default:
+        this.getThumbsPreview();
         break;
     }
   }
 
+  getTOC(){
+    if(!this.infoTocRetrieved){
+      switch (this.typeObject){
+        case Type.PDF:
+          //Retrieve TOC from PDF 
+          this.documentService.getTOC()
+            .subscribe(res => {
+              if(res != null){
+                for (let i = 0; i < res.length; i++) {
+                  let a = {
+                    title : res[i]['label'],
+                    key : (this.counter++).toString(),
+                    doc : i,
+                    page: res[i]['file_position']['index']
+                  }
+                  this.asChildren(res[i], a);
+                  this.nodesTOC.push(new NzTreeNode(a));
+                }
+              }
+              else{
+                this.documentService.getPhysicalJSON().subscribe(res => {
+                  for (let i = 0; i < Object.keys(res).length; i++) {
+                    let a = {
+                      title: res[i]['label'],
+                      key: (this.counter++).toString(),
+                      doc: i,
+                      page: 1
+                    }
+                    this.nodesTOC.push(new NzTreeNode(a));
+                  }
+                });
+              }
+              this.infoTocRetrieved = true;
+          });
+          break;
+        case Type.Image:
+          this.documentService.getPhysicalJSON().subscribe(res => {
+            for (let i = 0; i < Object.keys(res).length; i++) {
+              let a = {
+                title : res[i]['label'],
+                key : (this.counter++).toString(),
+                page: i + 1
+              }
+              this.nodesTOC.push(new NzTreeNode(a));
+            }
+            this.infoTocRetrieved = true;
+          });
+          break;
+      }
+    }
+  }
+
+  getThumbsPreview(){
+    if(!this.thumbnailsRetrieved){
+      if(this.thumbListMaxIndex > this.documentService.getMaxPage()){
+        this.thumbListMaxIndex = this.documentService.getMaxPage()
+      }
+      for (let page = 1; page <= this.thumbListMaxIndex; page++) { 
+        this.getThumbImages(page);
+      } 
+      this.thumbnailsRetrieved = true;
+    }
+  }
+
+  //Search text in document (only for PDF)
   getInputSearch(input:string) {
     this.documentService.findText(input)
     .subscribe(res => {
@@ -120,48 +168,74 @@ export class CollapsedMenuComponent implements OnInit {
       this.resultsSearch = res;
       for(let i = 0; i<res.length; i++){   
         let startString = this.resultsSearch[i]["text"];
+        //Put word in bold
         let endString = startString.replace(input, '<b>'+input+'</b>')
-        this.resultsSearch[i]["text"] = endString;    
+        this.resultsSearch[i]["text"] = endString; 
+        this.resultsSearch[i]["toolTip"] = startString;   
       }
     });
   }
 
-  getPage(nrPage: number){ 
-    this.pageChanged.emit({"Page":nrPage,"Angle": 0});
-  }
-
+  //Clearing results
   clearResults(){ 
     this.resultsSearch = [];
     this.inputValue = null;
   }
 
+  //Emit message to parent about the page
+  getPage(nrPage: number, doc: number){ 
+    this.pageChanged.emit({"Page":nrPage, "Angle": 0, "Doc":doc});
+  }
+
+  //When last thumb is displayed call to the next thumb from server
   onIntersection(event : any) {
     if(event.target.id == this.thumbListMaxIndex 
         && event.visible == true 
-        && this.thumbListMaxIndex < this.documentService.getMaxPageDocument()){
+        && this.thumbListMaxIndex < this.documentService.getMaxPage()){
       this.thumbListMaxIndex++;
       this.getThumbImages(this.thumbListMaxIndex);
     }
   }
 
   getThumbImages(page: number){
-    this.documentService.getImageFromPage(page,0,150,150)
-      .subscribe(thumb => {
-        let reader = new FileReader();
-        reader.addEventListener("load", () => {
-            this.thumbList.push(reader.result);
-          }, false
-        );
-        if (thumb) {
-          reader.readAsDataURL(thumb);
-        }
-      });
+    switch (this.typeObject){
+      case Type.PDF:
+        this.documentService.getImageFromDocument(page,0,150,150)
+          .subscribe(thumb => {
+            let reader = new FileReader();
+            reader.addEventListener("load", () => {
+                this.thumbList.push(reader.result);
+              }, false
+            );
+            if (thumb) {
+              reader.readAsDataURL(thumb);
+            }
+        });
+        break;
+      case Type.Image:
+        let structure = this.documentService.getStructureObject();
+        this.documentService.setUrlObject(structure[page-1]['url']);
+        this.documentService.getImage(0,150,150)  
+          .subscribe(thumb => {
+            let reader = new FileReader();
+            reader.addEventListener("load", () => {
+                this.thumbList.push(reader.result);
+              }, false
+            );
+            if (thumb) {
+              reader.readAsDataURL(thumb);
+            }
+        });
+        break;
+    }
   }
 
+  //On Thumb selected display the correct page
   thumbSelected(page: number){
-    this.getPage(page); 
+    this.getPage(page, null); 
   }
 
+  //Mode display of thumb's (list or grid)
   modeView(mode: string){
     this.modeViewThumb = mode;
   }

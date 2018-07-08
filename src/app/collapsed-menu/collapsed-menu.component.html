@@ -21,7 +21,7 @@
                         <i class="anticon anticon-close cancelResults" (click) = "clearResults()"></i>
                     </div> 
                     <ul *ngFor="let result of resultsSearch">
-                        <li [innerHTML]=result.text style="padding: 3px" (click) = "getPage(result.page)"></li>
+                        <li nz-tooltip [nzTitle]=result.toolTip nzPlacement="bottom" [innerHTML]=result.text style="padding: 3px" (click) = "getPage(result.page)"></li>
                     </ul>
                 </div>
             </div>
@@ -30,7 +30,7 @@
             <nz-tree [(ngModel)]="nodesTOC"
                 [nzShowLine]="false"
                 [nzDefaultExpandAll]="true" 
-                (nzClick)="mouseActionMenu($event)">
+                (nzClick)="onClickTree($event)">
             </nz-tree>
         </ng-container>
         <ng-container *ngSwitchCase="Menu.ThumbPreview">

@@ -12,10 +12,9 @@ export class ContentComponent implements OnInit {
   
   constructor() { }
 
-  ngOnInit() {
-     
-  }
+  ngOnInit() { }
 
+  //Display the image
   setImage(image: Blob){
     this.imageToShow = image;
   }

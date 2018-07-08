@@ -5,17 +5,15 @@
         <i (click)="onMenuClick(BottomMenu.ZoomIn)" class="fa fa-search-plus myIcons"></i> 
         <i (click)="onMenuClick(BottomMenu.ZoomOut)" class="fa fa-search-minus myIcons"></i>
 
-        <i (click)="onMenuClick(BottomMenu.FirstPage)" class="anticon anticon-fast-backward myIcons" style="margin-left: 25px"></i>
-        <i (click)="onMenuClick(BottomMenu.DecrementPage)" class="anticon anticon-step-backward myIcons"></i>
-        <input nz-input (keyup.enter)="getPage(inputPage.value)" [(ngModel)]="currentPage" #inputPage id="inputPage">
-        <i (click)="onMenuClick(BottomMenu.IncrementPage)" class="anticon anticon-step-forward myIcons"></i>
-        <i (click)="onMenuClick(BottomMenu.LastPage)" class="anticon anticon-fast-forward myIcons"></i>
+        <i (click)="onMenuClick(BottomMenu.FirstPage)" class="anticon anticon-fast-backward myIcons" [ngClass]="currentPage == minValuePage ? 'notSelectable' : '' " style="margin-left: 25px"></i>
+        <i (click)="onMenuClick(BottomMenu.DecrementPage)" class="anticon anticon-step-backward myIcons" [ngClass]="currentPage == minValuePage ? 'notSelectable' : '' " ></i>
+        <input nz-input (keyup.enter)="getPage(inputPage.value)" [(ngModel)]="currentPage" #inputPage id="inputPage" [disabled]="isDisabled">
+        <i (click)="onMenuClick(BottomMenu.IncrementPage)" class="anticon anticon-step-forward myIcons" [ngClass]="currentPage == maxValuePage ? 'notSelectable' : '' "></i>
+        <i (click)="onMenuClick(BottomMenu.LastPage)" class="anticon anticon-fast-forward myIcons" [ngClass]="currentPage == maxValuePage ? 'notSelectable' : '' "></i>
         
 
         <i (click)="onMenuClick(BottomMenu.FitToHeight)" class="fa fa-arrows-v myIcons" style="margin-left: 25px"></i>
         <i (click)="onMenuClick(BottomMenu.FitToWidth)" class="fa fa-arrows-h myIcons"></i>
         <i (click)="onMenuClick(BottomMenu.OriginalSize)" class="fa fa-file myIcons"></i>
-
-
     </div>
 </nz-affix>
