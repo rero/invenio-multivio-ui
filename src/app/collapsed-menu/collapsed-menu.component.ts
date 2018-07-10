@@ -63,6 +63,8 @@ export class CollapsedMenuComponent implements OnInit {
   //Display the page from TOC
   onClickTree(e: any): void {
     this.getPage(e.node.origin.page, e.node.origin.doc);
+    console.log(e.node.origin.doc);
+    
   }
 
   //Check if node as children's (recursive)
@@ -101,51 +103,61 @@ export class CollapsedMenuComponent implements OnInit {
       switch (this.typeObject){
         case Type.PDF:
           //Retrieve TOC from PDF 
-          this.documentService.getTOC()
-            .subscribe(res => {
-              if(res != null){
-                for (let i = 0; i < res.length; i++) {
-                  let a = {
-                    title : res[i]['label'],
-                    key : (this.counter++).toString(),
-                    doc : i,
-                    page: res[i]['file_position']['index']
+          this.documentService.getPhysicalJSON().subscribe(res => {
+            for (let i = 0; i < Object.keys(res).length; i++) {
+              this.documentService.setUrlObject(this.documentService.getStructureObject()[i]['url']);
+              this.documentService.getTOC().subscribe(data => {
+                if (data != null) {
+                  let node = {
+                    title: res[i]['label'],
+                    key: (this.counter++).toString(),
+                    page: 1,
+                    doc: i,
+                    children: []
                   }
-                  this.asChildren(res[i], a);
-                  this.nodesTOC.push(new NzTreeNode(a));
-                }
-              }
-              else{
-                this.documentService.getPhysicalJSON().subscribe(res => {
-                  for (let i = 0; i < Object.keys(res).length; i++) {
+                  for (let j = 0; j < data.length; j++) {
                     let a = {
-                      title: res[i]['label'],
+                      title: data[j]['label'],
                       key: (this.counter++).toString(),
                       doc: i,
-                      page: 1
+                      page: data[j]['file_position']['index']
                     }
-                    this.nodesTOC.push(new NzTreeNode(a));
+                    this.asChildren(data[j], a);
+                    node['children'].push(a);
                   }
-                });
-              }
-              this.infoTocRetrieved = true;
+                  this.nodesTOC.push(new NzTreeNode(node));
+                }
+                else {
+                  let node = {
+                    title: res[i]['label'],
+                    key: (this.counter++).toString(),
+                    doc: i,
+                    page: 1,
+                    children: []
+                  }
+                  this.nodesTOC.push(new NzTreeNode(node));
+                }
+              })
+            }
           });
+          this.infoTocRetrieved = true;
           break;
         case Type.Image:
           this.documentService.getPhysicalJSON().subscribe(res => {
             for (let i = 0; i < Object.keys(res).length; i++) {
-              let a = {
-                title : res[i]['label'],
-                key : (this.counter++).toString(),
+              let node = {
+                title: res[i]['label'],
+                key: (this.counter++).toString(),
                 page: i + 1
               }
-              this.nodesTOC.push(new NzTreeNode(a));
+              this.nodesTOC.push(new NzTreeNode(node));
             }
             this.infoTocRetrieved = true;
           });
           break;
+        }
       }
-    }
+     
   }
 
   getThumbsPreview(){
@@ -154,6 +166,8 @@ export class CollapsedMenuComponent implements OnInit {
         this.thumbListMaxIndex = this.documentService.getMaxPage()
       }
       for (let page = 1; page <= this.thumbListMaxIndex; page++) { 
+        console.log(page);
+        console.log(this.documentService.getMaxPage());
         this.getThumbImages(page);
       } 
       this.thumbnailsRetrieved = true;
@@ -238,6 +252,11 @@ export class CollapsedMenuComponent implements OnInit {
   //Mode display of thumb's (list or grid)
   modeView(mode: string){
     this.modeViewThumb = mode;
+  }
+
+  resetThumbList(){
+    this.thumbnailsRetrieved = false;
+    this.thumbList = [];
   }
 
 }

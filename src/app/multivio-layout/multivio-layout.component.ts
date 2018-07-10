@@ -7,6 +7,7 @@ import { Menu } from '../enum/menu.enum';
 import { Display } from '../enum/display.enum';
 import { Type } from '../enum/type.enum';
 import { ResizedEvent } from 'angular-resize-event/resized-event';  
+import { resolve } from 'url';
 
 @Component({
   selector: 'app-multivio',
@@ -65,13 +66,13 @@ export class MultivioLayoutComponent implements OnInit {
       this.title = res['title'];
       //Setting creator info
       this.creator = res['creator'][0];
-      this.setPhysicalJson();
+      this.setPhysicalJson(0);
       }
     ); 
   }
 
   //Getting physical info from JSON
-  setPhysicalJson(){
+  setPhysicalJson(docNumber: number){
     this.documentService.getPhysicalJSON().subscribe(data => {
       //Check if we are working with multiples documents/image at same time
       if (Object.keys(data).length > 1){
@@ -79,7 +80,7 @@ export class MultivioLayoutComponent implements OnInit {
       }
       //By default we set the first document/image
       this.documentService.setStructureObject(data);
-      this.documentService.setUrlObject(data[0]['url']);  
+      this.documentService.setUrlObject(data[docNumber]['url']);  
       this.loadMetadata();
       this.setImageContent()
     });
@@ -113,7 +114,10 @@ export class MultivioLayoutComponent implements OnInit {
     this.bottomMenuComponent.currentPage = event["Page"];
     this.currentPage = event["Page"];
     if(event["Doc"] != null){
-      this.currentDocument = event["Doc"];
+      if (event["Doc"] != this.currentDocument){
+        this.collapsedMenuComponent.resetThumbList();
+        this.currentDocument = event["Doc"];
+      }
     }
     this.anglePage = event["Angle"]
     switch (event["Display"]) {
@@ -149,8 +153,8 @@ export class MultivioLayoutComponent implements OnInit {
           this.documentService.setMaxPage(res['nPages']);
           this.bottomMenuComponent.maxValuePage = this.documentService.getMaxPage();
           this.bottomMenuComponent.checkInput();
-          this.originalHeight = Math.round(res['nativeSize'][1][1]);
-          this.originalWidth  = Math.round(res['nativeSize'][1][0]); 
+          this.originalHeight = Math.round(res['nativeSize'][0][1]);
+          this.originalWidth  = Math.round(res['nativeSize'][0][0]); 
         });
         break;
       case Type.Image:
@@ -215,6 +219,7 @@ export class MultivioLayoutComponent implements OnInit {
       case Type.PDF:
         //Get image from document
         this.documentService.setUrlObject(this.documentService.getStructureObject()[this.currentDocument]['url']);
+        this.loadMetadata();
         this.documentService.getImageFromDocument(this.currentPage, this.anglePage, this.contentWidth, this.contentHeight).subscribe(data => {
           this.createImageFromBlob(data);
           this.setSpinnerLoading(false);
@@ -223,6 +228,7 @@ export class MultivioLayoutComponent implements OnInit {
       case Type.Image:
         //Get image
         this.documentService.setUrlObject(this.documentService.getStructureObject()[this.currentPage-1]['url']);
+        this.loadMetadata();
         this.documentService.getImage(this.anglePage, this.contentWidth, this.contentHeight).subscribe(data => {
           this.createImageFromBlob(data);
           this.setSpinnerLoading(false);

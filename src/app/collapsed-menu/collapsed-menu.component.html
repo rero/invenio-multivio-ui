@@ -29,7 +29,7 @@
         <ng-container *ngSwitchCase="Menu.TOC">
             <nz-tree [(ngModel)]="nodesTOC"
                 [nzShowLine]="false"
-                [nzDefaultExpandAll]="true" 
+                [nzDefaultExpandedKeys] = "['0']"
                 (nzClick)="onClickTree($event)">
             </nz-tree>
         </ng-container>
