@@ -4,8 +4,7 @@ import { NzTreeNode } from 'ng-zorro-antd';
 import { DocumentService } from '../document.service';
 import { Menu } from '../enum/menu.enum';
 import { Type } from '../enum/type.enum';
-import { logging } from 'protractor';
-import { METHODS } from 'http';
+
 
 @Component({
   selector: 'app-collapsed-menu',
@@ -41,6 +40,7 @@ export class CollapsedMenuComponent implements OnInit {
   thumbListMaxIndex: number = 8;
   modeViewThumb: string = 'list'
   typeObject: string ;
+  searchDone: boolean = false;
 
   constructor(private documentService:DocumentService) { }
 
@@ -98,6 +98,7 @@ export class CollapsedMenuComponent implements OnInit {
     }
   }
 
+  //Retrieve the table of contents of documents if exists
   getTOC(){
     if(!this.infoTocRetrieved){
       switch (this.typeObject){
@@ -178,6 +179,7 @@ export class CollapsedMenuComponent implements OnInit {
   getInputSearch(input:string) {
     this.documentService.findText(input)
     .subscribe(res => {
+      this.searchDone = true;
       this.sizeResultsSearch = res.length;
       this.resultsSearch = res;
       for(let i = 0; i<res.length; i++){   
@@ -194,6 +196,7 @@ export class CollapsedMenuComponent implements OnInit {
   clearResults(){ 
     this.resultsSearch = [];
     this.inputValue = null;
+    this.searchDone = false;
   }
 
   //Emit message to parent about the page
@@ -211,6 +214,7 @@ export class CollapsedMenuComponent implements OnInit {
     }
   }
 
+  //Retrieve the thumbs images
   getThumbImages(page: number){
     switch (this.typeObject){
       case Type.PDF:
@@ -254,6 +258,7 @@ export class CollapsedMenuComponent implements OnInit {
     this.modeViewThumb = mode;
   }
 
+  //Reset thumb list
   resetThumbList(){
     this.thumbnailsRetrieved = false;
     this.thumbList = [];

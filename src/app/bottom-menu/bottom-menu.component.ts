@@ -32,8 +32,11 @@ export class BottomMenuComponent implements OnInit {
 
   //Che if input must to be disabled or not
   checkInput(){
-    if(this.maxValuePage == this.currentPage){
+    if (this.maxValuePage == this.currentPage || this.minValuePage == this.currentPage){
       this.isDisabled = true;
+    }
+    else{
+      this.isDisabled = false;
     }
   }
 

@@ -24,6 +24,11 @@
                         <li nz-tooltip [nzTitle]=result.toolTip nzPlacement="bottom" [innerHTML]=result.text style="padding: 3px" (click) = "getPage(result.page)"></li>
                     </ul>
                 </div>
+                <div *ngIf="resultsSearch.length == 0 && searchDone" id="divResults" style="height: 40px;">
+                    <div>
+                        <h3 style="margin-bottom: 15px; float: left; ">No results found</h3>
+                    </div>
+                </div>
             </div>
         </ng-container>
         <ng-container *ngSwitchCase="Menu.TOC">
