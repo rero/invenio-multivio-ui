@@ -25,6 +25,7 @@ import { Type } from '../enum/type.enum';
 export class CollapsedMenuComponent implements OnInit {
 
   @Output() pageChanged = new EventEmitter();
+  @Output() searchItemClick = new EventEmitter();
 
   Menu = Menu;
   inputValue: string = "";
@@ -41,6 +42,7 @@ export class CollapsedMenuComponent implements OnInit {
   modeViewThumb: string = 'list'
   typeObject: string ;
   searchDone: boolean = false;
+  liClicked: number = -1;
 
   constructor(private documentService:DocumentService) { }
 
@@ -63,8 +65,6 @@ export class CollapsedMenuComponent implements OnInit {
   //Display the page from TOC
   onClickTree(e: any): void {
     this.getPage(e.node.origin.page, e.node.origin.doc);
-    console.log(e.node.origin.doc);
-    
   }
 
   //Check if node as children's (recursive)
@@ -117,14 +117,14 @@ export class CollapsedMenuComponent implements OnInit {
                     children: []
                   }
                   for (let j = 0; j < data.length; j++) {
-                    let a = {
+                    let subNode = {
                       title: data[j]['label'],
                       key: (this.counter++).toString(),
                       doc: i,
                       page: data[j]['file_position']['index']
                     }
-                    this.asChildren(data[j], a);
-                    node['children'].push(a);
+                    this.asChildren(data[j], subNode);
+                    node['children'].push(subNode);
                   }
                   this.nodesTOC.push(new NzTreeNode(node));
                 }
@@ -167,8 +167,6 @@ export class CollapsedMenuComponent implements OnInit {
         this.thumbListMaxIndex = this.documentService.getMaxPage()
       }
       for (let page = 1; page <= this.thumbListMaxIndex; page++) { 
-        console.log(page);
-        console.log(this.documentService.getMaxPage());
         this.getThumbImages(page);
       } 
       this.thumbnailsRetrieved = true;
@@ -182,13 +180,19 @@ export class CollapsedMenuComponent implements OnInit {
       this.searchDone = true;
       this.sizeResultsSearch = res.length;
       this.resultsSearch = res;
-      for(let i = 0; i<res.length; i++){   
-        let startString = this.resultsSearch[i]["text"];
-        //Put word in bold
-        let endString = startString.replace(input, '<b>'+input+'</b>')
-        this.resultsSearch[i]["text"] = endString; 
-        this.resultsSearch[i]["toolTip"] = startString;   
+      if (this.sizeResultsSearch > 0) {
+        for (let i = 0; i < res.length; i++) {
+          let startString = this.resultsSearch[i]["text"];
+          //Put word in bold
+          let endString = startString.replace(input, '<b>' + input + '</b>')
+          this.resultsSearch[i]["text"] = endString;
+          this.resultsSearch[i]["toolTip"] = startString;
+        }
       }
+      else{
+        this.searchItemClick.emit({ "BBox": this.resultsSearch });
+      }
+      
     });
   }
 
@@ -197,11 +201,26 @@ export class CollapsedMenuComponent implements OnInit {
     this.resultsSearch = [];
     this.inputValue = null;
     this.searchDone = false;
+    this.searchItemClick.emit({ "BBox": this.resultsSearch });
   }
 
   //Emit message to parent about the page
-  getPage(nrPage: number, doc: number){ 
+  getPage(nrPage: number, doc: number){    
     this.pageChanged.emit({"Page":nrPage, "Angle": 0, "Doc":doc});
+  }
+
+  //Click on list result of search
+  resultClick(result: any, liNumberClick: number){ 
+    this.liClicked = liNumberClick;
+    //Send info about search to display
+    this.resultsSearch.forEach(element => {
+      if (element.text == result.text)
+        element['selected'] = true;
+      else
+        element['selected'] = false;
+    });
+    this.getPage(result.page, null);
+    this.searchItemClick.emit({ "BBox": this.resultsSearch});
   }
 
   //When last thumb is displayed call to the next thumb from server

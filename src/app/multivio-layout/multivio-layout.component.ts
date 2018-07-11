@@ -46,6 +46,7 @@ export class MultivioLayoutComponent implements OnInit {
   metadataInfo: any;
   isLoading: boolean = true;
   currentDocument: number = 0;
+  ratioPage: number = 0;
 
   constructor(private documentService:DocumentService) { }
 
@@ -110,6 +111,7 @@ export class MultivioLayoutComponent implements OnInit {
 
   //Update image for rendering
   updateImage(event: Object){
+    this.contentComponent.resetBbox();
     this.setSpinnerLoading(true);
     this.bottomMenuComponent.currentPage = event["Page"];
     this.currentPage = event["Page"];
@@ -122,29 +124,31 @@ export class MultivioLayoutComponent implements OnInit {
     this.anglePage = event["Angle"]
     switch (event["Display"]) {
       case Display.ZoomIn:
-        this.contentWidth = Math.round(this.contentWidth +  this.contentWidth / 100 * 20)
-        this.contentHeight = Math.round(this.contentHeight +  this.contentHeight / 100 * 20)
+        this.contentWidth = Math.round(this.contentWidth + this.contentWidth / 100 * 20)
+        this.contentHeight = Math.round(this.contentHeight + this.contentHeight / 100 * 20)
         break;
       case Display.ZoomOut:
-        this.contentWidth = Math.round(this.contentWidth -  this.contentWidth / 100 * 20)
-        this.contentHeight = Math.round(this.contentHeight -  this.contentHeight / 100 * 20)  
+        this.contentWidth = Math.round(this.contentWidth - this.contentWidth / 100 * 20)
+        this.contentHeight = Math.round(this.contentHeight - this.contentHeight / 100 * 20)
         break;
       case Display.FitToWidth:
         this.contentWidth = this.maxWidth;
-        this.contentHeight = this.maxWidth * 2;
+        this.contentHeight = Math.round(this.maxWidth * this.ratioPage);
         break;
       case Display.FitToHeight:
         this.contentHeight = this.maxHeight;
-        this.contentWidth = this.maxHeight;
+        this.contentWidth = Math.round(this.maxHeight / this.ratioPage);
         break;
       case Display.OriginalSize:
         this.contentWidth = this.originalWidth;
         this.contentHeight = this.originalHeight;
         break;
     }
+    this.contentComponent.setInfoPage(this.contentHeight / this.originalHeight, this.currentPage); 
     this.setImageContent();
   }
 
+  //Load info abaout the document (ex. ssizes, number pages, ..)
   loadMetadata(){
     switch (this.typeObject) {
       case Type.PDF:
@@ -155,6 +159,7 @@ export class MultivioLayoutComponent implements OnInit {
           this.bottomMenuComponent.checkInput();
           this.originalHeight = Math.round(res['nativeSize'][0][1]);
           this.originalWidth  = Math.round(res['nativeSize'][0][0]); 
+          this.ratioPage = this.originalHeight / this.originalWidth;   
         });
         break;
       case Type.Image:
@@ -205,12 +210,12 @@ export class MultivioLayoutComponent implements OnInit {
   onResized(event: ResizedEvent): void {  //TODO resize?  call getPage? Attention of kind of object
     if( event.newWidth > 0 &&  event.newHeight > 0 && !this.firstRendering){
       this.contentWidth = event.newWidth ;
-      this.contentHeight = event.newHeight - 230;
-      this.firstRendering = true;
+      this.contentHeight = event.newHeight - 235;
+      //this.firstRendering = true;
       //this.setImageContent();
     }
     this.maxWidth = event.newWidth - 100;
-    this.maxHeight = event.newHeight - 230;
+    this.maxHeight = event.newHeight - 235;
   }
 
   //Set image to render
@@ -246,6 +251,12 @@ export class MultivioLayoutComponent implements OnInit {
     if(image) {
        reader.readAsDataURL(image);
     }
+  }
+
+  //Displaing box on document
+  displayBoxSearch(res: any){
+    this.contentComponent.setBBox(res);
+    this.contentComponent.setInfoPage(this.contentHeight / this.originalHeight, this.currentPage);
   }
 
   //Stop spinner loading

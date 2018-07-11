@@ -47,7 +47,7 @@
         </li>
       </ul>
     </nz-sider>
-    <app-collapsed-menu (pageChanged)='updateImage($event)'></app-collapsed-menu>
+    <app-collapsed-menu (pageChanged)='updateImage($event)' (searchItemClick)='displayBoxSearch($event)'></app-collapsed-menu>
     <nz-layout (resized)="onResized($event)">
       <nz-header style="background: #f0f2f5; padding:0;">
         <h3 style="text-align: center">{{title}}</h3>

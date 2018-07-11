@@ -1,3 +1,14 @@
-<div *ngIf="imageToShow != null" >
-    <img [src]="imageToShow" >
+<div *ngIf="imageToShow != null"  style="margin: auto; display: table">
+    <div style="position: relative; display: inline-flex;">
+        <img [src]="imageToShow" >
+        <div *ngFor="let bbox of bboxes;" style="position: absolute;">
+            <div style="position: absolute;" 
+                [ngStyle]="{'background-color': bbox.selected ? '#faad1459' : '#40a9ff36'}"            
+                [style.width.px]="(bbox.BBox.x2-bbox.BBox.x1)*ratio"
+                [style.height.px]="(bbox.BBox.y2-bbox.BBox.y1)*ratio"
+                [style.left.px]="(bbox.BBox.x1)*ratio"
+                [style.top.px]="(bbox.BBox.y1)*ratio">
+            </div>
+        </div>
+    </div>
 </div>

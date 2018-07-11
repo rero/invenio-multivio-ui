@@ -20,8 +20,8 @@
                         <h3 style="margin-bottom: 15px; float: left;">Results: {{sizeResultsSearch}}</h3>
                         <i class="anticon anticon-close cancelResults" (click) = "clearResults()"></i>
                     </div> 
-                    <ul *ngFor="let result of resultsSearch">
-                        <li nz-tooltip [nzTitle]=result.toolTip nzPlacement="bottom" [innerHTML]=result.text style="padding: 3px" (click) = "getPage(result.page)"></li>
+                    <ul *ngFor="let result of resultsSearch, let i = index">
+                        <li nz-tooltip [ngStyle]="{'background': i==liClicked ? '#faad1459': ''}" [nzTitle]=result.toolTip nzPlacement="bottom" [innerHTML]=result.text style="padding: 3px" (click) = "resultClick(result, i)"></li>
                     </ul>
                 </div>
                 <div *ngIf="resultsSearch.length == 0 && searchDone" id="divResults" style="height: 40px;">
