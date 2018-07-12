@@ -1,12 +1,14 @@
  <div [@collapseAnimation]='collapsed' style="height:100%">
+    <!--Option mode Thumblist preview -->
     <div *ngIf="actualMenu == Menu.ThumbPreview" style="height: 5%;">
         <div style="background-color: #343942e0; height: 100%;">
             <i (click)="modeView('list')" nz-tooltip nzTitle="Liste" nzPlacement="bottom" class="fa fa-th-list myIcons" style="left: 20%;position: relative;"></i>
             <i (click)="modeView('grid')" nz-tooltip nzTitle="Grille" nzPlacement="bottom" class="fa fa-th myIcons" style="left: 45%;position: relative;"></i>
         </div>
     </div>
-        
+    <!--Switching on differents options menu -->
     <div [ngSwitch]="actualMenu" id="subMenu" [ngStyle]="{ 'height' : (actualMenu == Menu.ThumbPreview) ? '95%' : '100%' }">
+        <!--Mode search -->
         <ng-container *ngSwitchCase="Menu.Find">
             <div id="searchDoc">
                 <nz-input-group nzSearch [nzSuffix]="suffixIconButton">
@@ -15,6 +17,7 @@
                 <ng-template #suffixIconButton>
                     <button nz-button nzType="primary" nzSearch (click) = "getInputSearch(inputSearch.value)"><i class="anticon anticon-search"></i></button>
                 </ng-template>
+                <!--Something found -->
                 <div *ngIf="resultsSearch.length > 0" id="divResults">
                     <div>
                         <h3 style="margin-bottom: 15px; float: left;">Results: {{sizeResultsSearch}}</h3>
@@ -24,6 +27,7 @@
                         <li nz-tooltip [ngStyle]="{'background': i==liClicked ? '#faad1459': ''}" [nzTitle]=result.toolTip nzPlacement="bottom" [innerHTML]=result.text style="padding: 3px" (click) = "resultClick(result, i)"></li>
                     </ul>
                 </div>
+                <!--No results  found -->
                 <div *ngIf="resultsSearch.length == 0 && searchDone" id="divResults" style="height: 40px;">
                     <div>
                         <h3 style="margin-bottom: 15px; float: left; ">No results found</h3>
@@ -31,6 +35,7 @@
                 </div>
             </div>
         </ng-container>
+        <!--Mode table of contents displayed -->
         <ng-container *ngSwitchCase="Menu.TOC">
             <nz-tree [(ngModel)]="nodesTOC"
                 [nzShowLine]="false"
@@ -38,8 +43,10 @@
                 (nzClick)="onClickTree($event)">
             </nz-tree>
         </ng-container>
+        <!--Mode thumb list displayed -->
         <ng-container *ngSwitchCase="Menu.ThumbPreview">
             <div [ngSwitch]="modeViewThumb">
+                <!--Mode thumblist as list mode -->
                 <ng-container *ngSwitchCase="'list'">
                     <div *ngFor="let thumb of thumbList; let i = index" style="margin-top: 25px">
                         <img inViewport
@@ -51,6 +58,7 @@
                         <p style="text-align: center; color:rgba(255,255,255,.65);">{{ i+1 }}</p>
                     </div>
                 </ng-container>
+                <!--Mode thumblist as grid mode -->
                 <ng-container *ngSwitchCase="'grid'">
                     <div class="grid-container">
                         <div *ngFor="let thumb of thumbList; let i = index" style="margin-top: 25px">
@@ -68,6 +76,7 @@
                 </ng-container>
             </div>
         </ng-container>
+        <!--Mode help displayed -->
         <ng-container *ngSwitchCase="Menu.Help">
             <div class="colorText" >
                 <h1 class="colorText">Aide</h1>

@@ -1,6 +1,8 @@
 <nz-layout style="height: 100%;">
     <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" [nzWidth]="width" [nzReverseArrow]="isReverseArrow" [nzCollapsedWidth]=80>
+      <!--Display logo -->
       <div class="logo">
+          <!--Display full logo or mini logo is menu is collapser or not -->
           <div *ngIf="isCollapsed;then logo_mini else logo_full"></div>
           <ng-template #logo_mini>
               <img style="margin: 5px 0px 0px -7px;" src="../../assets/images/logo_mini.png">
@@ -10,35 +12,41 @@
           </ng-template>   
       </div>
       <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed" >
+        <!--Option search on menu, only displayed if current mode is PDF  -->
         <li (click)="onMenuClick(Menu.Find)" nz-menu-item *ngIf="typeObject == Type.PDF">
           <span>
             <i class="anticon anticon-search"></i>
             <span class="nav-text">Recherche</span>
           </span>
         </li>
+        <!--Option menu table of contents -->
         <li (click)="onMenuClick(Menu.TOC)" nz-menu-item>
           <span>
             <i class="anticon anticon-bars"></i>
             <span class="nav-text">Structure</span>
           </span>
         </li>
+        <!--Option menu too se thumblist of document -->
         <li (click)="onMenuClick(Menu.ThumbPreview)" nz-menu-item>
           <span><i class="anticon anticon-switcher"></i>
             <span class="nav-text">Miniatures</span>
           </span>
         </li>
+        <!--Option menu to download actual document displayed -->
         <li (click)="onMenuClick(Menu.Download)" nz-menu-item>
           <span>
             <i class="anticon anticon-download"></i>
             <span class="nav-text">Télécharger</span>
           </span>
         </li>
+        <!--Option menu to switch mode display of bottom menu -->
         <li (click)="onMenuClick(Menu.BottomMenuVisible)" nz-menu-item>
           <span>
             <i class="anticon anticon-minus-square-o"></i>
             <span class="nav-text">Afficher menu</span>
           </span>
         </li>
+        <!--Option menu help -->
         <li (click)="onMenuClick(Menu.Help)" nz-menu-item>
             <span>
               <i class="anticon anticon-question-circle-o"></i>
@@ -47,20 +55,27 @@
         </li>
       </ul>
     </nz-sider>
+    <!--Collapser Menu Component -->
     <app-collapsed-menu (pageChanged)='updateImage($event)' (searchItemClick)='displayBoxSearch($event)'></app-collapsed-menu>
+    <!--Layout of page, with on resize trigger -->
     <nz-layout (resized)="onResized($event)">
+      <!--Dislay info about the document -->
       <nz-header style="background: #f0f2f5; padding:0;">
         <h3 style="text-align: center">{{title}}</h3>
         <h4 style="text-align: center; margin-top: -50px">{{creator}}</h4>
       </nz-header>
+      <!--Content -->
       <nz-content style="margin:0 16px; overflow: auto;">
         <div style="padding:24px; background: #f0f2f5; min-height: 360px;">
           <nz-spin [nzSpinning]="isLoading" [nzSize]="'large'" class="spinPosition">
+            <!--Dislay component content -->
             <app-content></app-content>
           </nz-spin>
         </div>
       </nz-content>
+      <!--Component bottom menu-->
       <app-bottom-menu (pageChanged)='updateImage($event)'></app-bottom-menu>
+      <!--Footer -->
       <nz-footer style="text-align: center;">Powered by 
         <a href="http://invenio-software.org/" target="_blank">Invenio</a>  / © Copyright <a href="http://www.rero.ch/">RERO</a>
       </nz-footer>

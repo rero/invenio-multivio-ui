@@ -27,7 +27,7 @@ export class ContentComponent implements OnInit {
     this.imageToShow = image;
   }
 
-  //SetBBox in the documet
+  //SetBBox of the documet
   setBBox(bboxes: any){
     this.allBBox = bboxes['BBox'];
   }
@@ -40,34 +40,30 @@ export class ContentComponent implements OnInit {
   //Set ration zoom
   setInfoPage(ratio: number, currentPage: number, angle: number){
     this.angle = angle;
-    this.bboxes = [];
+    this.resetBbox();
     this.ratio = ratio;
     this.currentPage = currentPage;
     this.getBBoxByPage();
-    console.log("Angle: "+angle);
-    
   }
 
   //Get the bboes on current page
   getBBoxByPage(){
     if(this.allBBox != []){
       this.allBBox.forEach(element => {
+        //Get only bboxes of actual page
         if (element.page == this.currentPage) {
           this.bboxes.push(element);
         }
       });
     }
-    console.log(this.bboxes);
-    
   }
 
   //On resized event , called after resize content
   onResized(event: ResizedEvent): void {  
-    if (event.newHeight > 0 && event.newWidth > 0){
+    if(event.newHeight > 0 && event.newWidth > 0){
+      //Setting info about the actual size
       this.imgHeight = event.newHeight;
       this.imgWidth = event.newWidth;
-      console.log(this.imgHeight);
-      console.log(this.imgWidth);
     }
   }
   

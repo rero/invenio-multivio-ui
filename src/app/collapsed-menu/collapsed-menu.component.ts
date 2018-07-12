@@ -21,6 +21,7 @@ import { Type } from '../enum/type.enum';
     ]),
   ]
 })
+
 export class CollapsedMenuComponent implements OnInit {
 
   @Output() pageChanged = new EventEmitter();
@@ -66,7 +67,7 @@ export class CollapsedMenuComponent implements OnInit {
     this.getPage(e.node.origin.page, e.node.origin.doc);
   }
 
-  //Check if node as children's (recursive)
+  //Check if node as children's (recursive) to construct the tree
   asChildren (val: Object, node: Object){
     if(val.hasOwnProperty('childs'))
     { 
@@ -85,7 +86,7 @@ export class CollapsedMenuComponent implements OnInit {
     }
   }
 
-  //Dipachch click menu to correct fonctionality
+  //Dipatch click menu to correct fonctionality
   dispatchMenu(option: number):void {
     switch (option) {
       case Menu.TOC:
@@ -101,6 +102,7 @@ export class CollapsedMenuComponent implements OnInit {
   getTOC(){
     if(!this.infoTocRetrieved){
       switch (this.typeObject){
+        //We have 2 modes PDF or Image
         case Type.PDF:
           //Retrieve TOC from PDF 
           this.documentService.getPhysicalJSON().subscribe(res => {
@@ -160,6 +162,7 @@ export class CollapsedMenuComponent implements OnInit {
      
   }
 
+  //Get the thumbslist, 8 at first loading or less if document as not 8 elements
   getThumbsPreview(){
     if(!this.thumbnailsRetrieved){
       if(this.thumbListMaxIndex > this.documentService.getMaxPage()){
@@ -182,20 +185,21 @@ export class CollapsedMenuComponent implements OnInit {
       if (this.sizeResultsSearch > 0) {
         for (let i = 0; i < res.length; i++) {
           let startString = this.resultsSearch[i]["text"];
-          //Put word in bold
+          //Put word in bold 
           let endString = startString.replace(input, '<b>' + input + '</b>')
           this.resultsSearch[i]["text"] = endString;
+          //Adding for tooltip
           this.resultsSearch[i]["toolTip"] = startString;
         }
       }
       else{
+        //Send BBox info at parent (in this case no results fournd)
         this.searchItemClick.emit({ "BBox": this.resultsSearch });
       }
-      
     });
   }
 
-  //Clearing results
+  //Clearing results to put all by default
   clearResults(){ 
     this.resultsSearch = [];
     this.inputValue = null;
@@ -214,16 +218,19 @@ export class CollapsedMenuComponent implements OnInit {
     this.liClicked = liNumberClick;
     //Send info about search to display
     this.resultsSearch.forEach(element => {
+      //Setting element selected as true for highlight in content component
       if (element.text == result.text)
         element['selected'] = true;
       else
         element['selected'] = false;
     });
+    //Dislay the page 
     this.getPage(result.page, null);
+    //Send info about the bbox
     this.searchItemClick.emit({ "BBox": this.resultsSearch});
   }
 
-  //When last thumb is displayed call to the next thumb from server
+  //When last thumb is displayed call to the next thumbs from server
   onIntersection(event : any) {
     if(event.target.id == this.thumbListMaxIndex 
         && event.visible == true 
@@ -236,6 +243,7 @@ export class CollapsedMenuComponent implements OnInit {
   //Retrieve the thumbs images
   getThumbImages(page: number){
     switch (this.typeObject){
+      //Mode PDF
       case Type.PDF:
         this.documentService.getImageFromDocument(page,0,150,150)
           .subscribe(thumb => {
@@ -249,6 +257,7 @@ export class CollapsedMenuComponent implements OnInit {
             }
         });
         break;
+      //Mode Image
       case Type.Image:
         let structure = this.documentService.getStructureObject();
         this.documentService.setUrlObject(structure[page-1]['url']);
@@ -282,5 +291,4 @@ export class CollapsedMenuComponent implements OnInit {
     this.thumbnailsRetrieved = false;
     this.thumbList = [];
   }
-
 }

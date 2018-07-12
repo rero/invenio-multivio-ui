@@ -110,8 +110,11 @@ export class MultivioLayoutComponent implements OnInit {
 
   //Update image for rendering
   updateImage(event: Object){
+    //Resetting bboxes
     this.contentComponent.resetBbox();
+    //Start spinner loading
     this.setSpinnerLoading(true);
+    //Retrive info from children's
     this.bottomMenuComponent.currentPage = event["Page"];
     this.currentPage = event["Page"];
     if(event["Doc"] != null){
@@ -121,6 +124,7 @@ export class MultivioLayoutComponent implements OnInit {
       }
     }
     this.anglePage = event["Angle"]
+    //Manage event display
     switch (event["Display"]) {
       case Display.ZoomIn:
         this.contentWidth = Math.round(this.contentWidth + this.contentWidth / 100 * 20)
@@ -143,7 +147,9 @@ export class MultivioLayoutComponent implements OnInit {
         this.contentHeight = this.originalHeight;
         break;
     }
+    //Set info for mode search
     this.contentComponent.setInfoPage(this.contentHeight / this.originalHeight, this.currentPage, this.anglePage); 
+    //Set image
     this.setImageContent();
   }
 
@@ -210,8 +216,8 @@ export class MultivioLayoutComponent implements OnInit {
     if( event.newWidth > 0 &&  event.newHeight > 0 && !this.firstRendering){
       this.contentWidth = event.newWidth ;
       this.contentHeight = event.newHeight - 235;
-      //this.firstRendering = true;
-      //this.setImageContent();
+      this.firstRendering = true;
+      this.setImageContent();
     }
     this.maxWidth = event.newWidth - 100;
     this.maxHeight = event.newHeight - 235;
@@ -223,6 +229,7 @@ export class MultivioLayoutComponent implements OnInit {
       case Type.PDF:
         //Get image from document
         this.documentService.setUrlObject(this.documentService.getStructureObject()[this.currentDocument]['url']);
+        //Loading news metadata of docuement
         this.loadMetadata();
         this.documentService.getImageFromDocument(this.currentPage, this.anglePage, this.contentWidth, this.contentHeight).subscribe(data => {
           this.createImageFromBlob(data);
@@ -232,6 +239,7 @@ export class MultivioLayoutComponent implements OnInit {
       case Type.Image:
         //Get image
         this.documentService.setUrlObject(this.documentService.getStructureObject()[this.currentPage-1]['url']);
+        //Loading news metadata of docuement
         this.loadMetadata();
         this.documentService.getImage(this.anglePage, this.contentWidth, this.contentHeight).subscribe(data => {
           this.createImageFromBlob(data);

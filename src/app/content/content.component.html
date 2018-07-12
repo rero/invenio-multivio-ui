@@ -1,51 +1,59 @@
+<!--Only display this template if one image exists -->
 <div *ngIf="imageToShow != null"  style="margin: auto; display: table">
+    <!--Detecting on resizing action -->
     <div style="position: relative; display: inline-flex;" (resized)="onResized($event)">
-        <img [src]="imageToShow" > 
-            <div [ngSwitch]="angle" style="position: absolute;">
-                <ng-container *ngSwitchCase="0">
-                    <div *ngFor="let bbox of bboxes;">
-                        <div style="position: absolute;" 
-                            [ngStyle]="{'background-color': bbox.selected ? '#faad1459' : '#40a9ff36'}" 
-                            [style.width.px]="(bbox.BBox.x2-bbox.BBox.x1)*ratio"
-                            [style.height.px]="(bbox.BBox.y2-bbox.BBox.y1)*ratio" 
-                            [style.left.px]="(bbox.BBox.x1)*ratio" 
-                            [style.top.px]="(bbox.BBox.y1)*ratio">
-                        </div>
+        <!--Image to display -->
+        <img [src]="imageToShow" /> 
+        <!--Switching on angle of documents (for bboxes) -->
+        <div [ngSwitch]="angle" style="position: absolute;">
+            <!--Angle 0° -->
+            <ng-container *ngSwitchCase="0">
+                <div *ngFor="let bbox of bboxes;">
+                    <div style="position: absolute;" 
+                        [ngStyle]="{'background-color': bbox.selected ? '#faad1459' : '#40a9ff36'}" 
+                        [style.width.px]="(bbox.BBox.x2-bbox.BBox.x1)*ratio"
+                        [style.height.px]="(bbox.BBox.y2-bbox.BBox.y1)*ratio" 
+                        [style.left.px]="(bbox.BBox.x1)*ratio" 
+                        [style.top.px]="(bbox.BBox.y1)*ratio">
                     </div>
-                </ng-container>
-                <ng-container *ngSwitchCase="90">
-                    <div *ngFor="let bbox of bboxes;">
-                        <div style="position: absolute;" 
-                            [ngStyle]="{'background-color': bbox.selected ? '#faad1459' : '#40a9ff36'}" 
-                            [style.width.px]="(bbox.BBox.y2-bbox.BBox.y1)*ratio"
-                            [style.height.px]="(bbox.BBox.x2-bbox.BBox.x1)*ratio" 
-                            [style.left.px]="(bbox.BBox.y1)*ratio"
-                            [style.top.px]="(imgHeight - bbox.BBox.x2 *ratio )" >
-                        </div>
+                </div>
+            </ng-container>
+            <!--Angle 90° -->
+            <ng-container *ngSwitchCase="90">
+                <div *ngFor="let bbox of bboxes;">
+                    <div style="position: absolute;" 
+                        [ngStyle]="{'background-color': bbox.selected ? '#faad1459' : '#40a9ff36'}" 
+                        [style.width.px]="(bbox.BBox.y2-bbox.BBox.y1)*ratio"
+                        [style.height.px]="(bbox.BBox.x2-bbox.BBox.x1)*ratio" 
+                        [style.left.px]="(bbox.BBox.y1)*ratio"
+                        [style.top.px]="(imgHeight - bbox.BBox.x2 *ratio )" >
                     </div>
-                </ng-container>
-                <ng-container *ngSwitchCase="180">
-                    <div *ngFor="let bbox of bboxes;">
-                        <div style="position: absolute;" 
-                            [ngStyle]="{'background-color': bbox.selected ? '#faad1459' : '#40a9ff36'}" 
-                            [style.width.px]="(bbox.BBox.x2-bbox.BBox.x1)*ratio"
-                            [style.height.px]="(bbox.BBox.y2-bbox.BBox.y1)*ratio" 
-                            [style.left.px]="(imgWidth - bbox.BBox.x2 *ratio)" 
-                            [style.top.px]="(imgHeight -bbox.BBox.y2 *ratio)">
-                        </div>
+                </div>
+            </ng-container>
+            <!--Angle 180° -->
+            <ng-container *ngSwitchCase="180">
+                <div *ngFor="let bbox of bboxes;">
+                    <div style="position: absolute;" 
+                        [ngStyle]="{'background-color': bbox.selected ? '#faad1459' : '#40a9ff36'}" 
+                        [style.width.px]="(bbox.BBox.x2-bbox.BBox.x1)*ratio"
+                        [style.height.px]="(bbox.BBox.y2-bbox.BBox.y1)*ratio" 
+                        [style.left.px]="(imgWidth - bbox.BBox.x2 *ratio)" 
+                        [style.top.px]="(imgHeight -bbox.BBox.y2 *ratio)">
                     </div>
-                </ng-container>
-                <ng-container *ngSwitchCase="270">
-                    <div *ngFor="let bbox of bboxes;">
-                        <div style="position: absolute;" 
-                            [ngStyle]="{'background-color': bbox.selected ? '#faad1459' : '#40a9ff36'}" 
-                            [style.width.px]="(bbox.BBox.y2-bbox.BBox.y1)*ratio"
-                            [style.height.px]="(bbox.BBox.x2-bbox.BBox.x1)*ratio" 
-                            [style.top.px]="(bbox.BBox.x1 *ratio )" 
-                            [style.left.px]="(imgWidth - bbox.BBox.y2 *ratio)">
-                        </div>
+                </div>
+            </ng-container>
+            <!--Angle 270° -->
+            <ng-container *ngSwitchCase="270">
+                <div *ngFor="let bbox of bboxes;">
+                    <div style="position: absolute;" 
+                        [ngStyle]="{'background-color': bbox.selected ? '#faad1459' : '#40a9ff36'}" 
+                        [style.width.px]="(bbox.BBox.y2-bbox.BBox.y1)*ratio"
+                        [style.height.px]="(bbox.BBox.x2-bbox.BBox.x1)*ratio" 
+                        [style.top.px]="(bbox.BBox.x1 *ratio )" 
+                        [style.left.px]="(imgWidth - bbox.BBox.y2 *ratio)">
                     </div>
-                </ng-container>
-            </div>    
+                </div>
+            </ng-container>
+        </div>    
     </div>
 </div>

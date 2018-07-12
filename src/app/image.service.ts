@@ -94,6 +94,4 @@ export class ImageService{
   getAsMultipleOnjects(): boolean {
     return this.asMultiplesObjects;
   }
-
-
 }
