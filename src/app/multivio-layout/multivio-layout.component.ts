@@ -217,7 +217,7 @@ export class MultivioLayoutComponent implements OnInit {
       this.contentWidth = event.newWidth ;
       this.contentHeight = event.newHeight - 235;
       this.firstRendering = true;
-      this.setImageContent();
+      //this.setImageContent();
     }
     this.maxWidth = event.newWidth - 100;
     this.maxHeight = event.newHeight - 235;
@@ -227,10 +227,12 @@ export class MultivioLayoutComponent implements OnInit {
   setImageContent(){
     switch (this.typeObject) {
       case Type.PDF:
-        //Get image from document
-        this.documentService.setUrlObject(this.documentService.getStructureObject()[this.currentDocument]['url']);
-        //Loading news metadata of docuement
-        this.loadMetadata();
+        if(this.documentService.getAsMultipleOnjects()){
+          //Get image from document
+          this.documentService.setUrlObject(this.documentService.getStructureObject()[this.currentDocument]['url']);
+          //Loading news metadata of docuement
+          this.loadMetadata();
+        }
         this.documentService.getImageFromDocument(this.currentPage, this.anglePage, this.contentWidth, this.contentHeight).subscribe(data => {
           this.createImageFromBlob(data);
           this.setSpinnerLoading(false);
