@@ -11,6 +11,8 @@ export class UrlPrefixService {
   public downloadDocument: string;
   public metadataJSON: string;
   public physicalJSON: string;
+  public metadataXML: string;
+  public physicalXML: string;
   public imageRender: string;
   public metadataImage: string;
   public image: string;
@@ -31,6 +33,9 @@ export class UrlPrefixService {
       //URL's JSON
       this.metadataJSON = '/api-json/metadata/';
       this.physicalJSON = '/api-json/physical/';
+      //URL's XML
+      this.metadataXML = '/api-xml/metadata/';
+      this.physicalXML = '/api-xml/physical/';
       //URL's Image
       this.imageRender = '/api-image/render/';
       this.metadataImage = '/api-image/metadata/';

@@ -105,7 +105,7 @@ export class CollapsedMenuComponent implements OnInit {
         //We have 2 modes PDF or Image
         case Type.PDF:
           //Retrieve TOC from PDF 
-          this.documentService.getPhysicalJSON().subscribe(res => {
+          this.documentService.getPhysical().subscribe(res => {
             for (let i = 0; i < Object.keys(res).length; i++) {
               this.documentService.setUrlObject(this.documentService.getStructureObject()[i]['url']);
               this.documentService.getTOC().subscribe(data => {
@@ -145,17 +145,17 @@ export class CollapsedMenuComponent implements OnInit {
           this.infoTocRetrieved = true;
           break;
         case Type.Image:
-          this.documentService.getPhysicalJSON().subscribe(res => {
-            for (let i = 0; i < Object.keys(res).length; i++) {
-              let node = {
-                title: res[i]['label'],
-                key: (this.counter++).toString(),
-                page: i + 1
+          this.documentService.getPhysical().subscribe(res => {
+              for (let i = 0; i < Object.keys(res).length; i++) {
+                let node = {
+                  title: res[i]['label'],
+                  key: (this.counter++).toString(),
+                  page: i + 1
+                }
+                this.nodesTOC.push(new NzTreeNode(node));
               }
-              this.nodesTOC.push(new NzTreeNode(node));
-            }
-            this.infoTocRetrieved = true;
-          });
+              this.infoTocRetrieved = true;
+            });
           break;
         }
       }
@@ -186,7 +186,7 @@ export class CollapsedMenuComponent implements OnInit {
         for (let i = 0; i < res.length; i++) {
           let startString = this.resultsSearch[i]["text"];
           //Put word in bold 
-          let endString = startString.replace(input, '<b>' + input + '</b>')
+          let endString = startString.replace(/input/i, '<b>' + 'TEST' + '</b>');
           this.resultsSearch[i]["text"] = endString;
           //Adding for tooltip
           this.resultsSearch[i]["toolTip"] = startString;

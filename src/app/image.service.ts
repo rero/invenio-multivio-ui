@@ -11,8 +11,10 @@ export class ImageService{
   protected asMultiplesObjects: boolean = false;
   protected structureObject: any;
   protected urlCurrentObject: string = '';
-  protected urlJson: string = '';
+  protected url: string = '';
   protected maxPages: number = 0;
+  protected prefixMetadata: string = '';
+  protected prefixPhysical: string = '';
   
   /** GET image from server */
   getImage(angle: number, maxWidth: number, minHeight:number): Observable<Blob> {
@@ -35,14 +37,14 @@ export class ImageService{
     return this.http.get(this.urlPrefix.downloadImage + this.urlCurrentObject, {responseType: 'blob'});
   }
   
-  /** GET metadata from json */
-  getMetadataJSON(): Observable<Object> {
-    return this.http.get<Object[]>(this.urlPrefix.metadataJSON + this.urlJson);
+  /** GET metadata from json or xml */
+  getMetadata(): Observable<Object> {
+    return this.http.get<Object[]>(this.prefixMetadata + this.url);
   }
 
-  /** GET metadata from json */
-  getPhysicalJSON(): Observable<Object> {
-    return this.http.get<Object[]>(this.urlPrefix.physicalJSON + this.urlJson);
+  /** GET metadata from json or xml */
+  getPhysical(): Observable<Object> {
+    return this.http.get<Object[]>(this.prefixPhysical + this.url);
   }
 
   /** SET url document from the document for the service */
@@ -55,14 +57,22 @@ export class ImageService{
     return this.urlCurrentObject;
   }
 
-  /** SET url json of document from the document for the service */
-  setUrlJSON(url: string){
-    this.urlJson = url;
+  /** SET url of document  for the service */
+  setUrl(url: string){
+    this.url = url;
+    if (this.url.endsWith(".json/")){
+      this.prefixMetadata = this.urlPrefix.metadataJSON;
+      this.prefixPhysical = this.urlPrefix.physicalJSON
+    }
+    else{
+      this.prefixMetadata = this.urlPrefix.metadataXML;
+      this.prefixPhysical = this.urlPrefix.physicalXML;
+    }
   }
 
   /** GET url json of document from the document for the service */
-  getUrlJSON(): string{
-    return this.urlJson;
+  getUrl(): string{
+    return this.url;
   }
 
   /** SET max page */

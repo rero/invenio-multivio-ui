@@ -31,16 +31,6 @@ export class BottomMenuComponent implements OnInit {
     this.isVisible = !this.isVisible;
   }
 
-  //Che if input must to be disabled or not
-  checkInput(){
-    if (this.maxValuePage == this.currentPage || this.minValuePage == this.currentPage){
-      this.isDisabled = true;
-    }
-    else{
-      this.isDisabled = false;
-    }
-  }
-
   //Dispatch on bottom menu click
   onMenuClick(key: BottomMenu){
     //Update image content on option clicked

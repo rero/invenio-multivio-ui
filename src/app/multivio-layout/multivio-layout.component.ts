@@ -23,7 +23,7 @@ export class MultivioLayoutComponent implements OnInit {
   @ViewChild(ContentComponent)
   private contentComponent: ContentComponent;
 
-  @Input() urlJSON: string;
+  @Input() url: string;
 
   Menu = Menu;
   Type = Type;
@@ -46,19 +46,20 @@ export class MultivioLayoutComponent implements OnInit {
   isLoading: boolean = true;
   currentDocument: number = 0;
   ratioPage: number = 0;
+  documentChanged: boolean = false;
 
   constructor(private documentService:DocumentService) { }
 
   ngOnInit() {
-    //Setting url metadata JSON  
-    this.documentService.setUrlJSON(this.urlJSON);
+    //Setting url metadata (JSON or XML )
+    this.documentService.setUrl(this.url);
     //Get metadata Json 
-    this.setMetadaJson();
+    this.setMetada();
   }
 
   //Getting info from JSON
-  setMetadaJson(){
-    this.documentService.getMetadataJSON().subscribe(res => {
+  setMetada(){
+    this.documentService.getMetadata().subscribe(res => {
       this.metadataInfo = res;
       //Set type of object
       this.typeObject = res['mime']
@@ -66,21 +67,21 @@ export class MultivioLayoutComponent implements OnInit {
       this.title = res['title'];
       //Setting creator info
       this.creator = res['creator'][0];
-      this.setPhysicalJson(0);
+      this.setPhysical(0);
       }
     ); 
   }
 
   //Getting physical info from JSON
-  setPhysicalJson(docNumber: number){
-    this.documentService.getPhysicalJSON().subscribe(data => {
+  setPhysical(docNumber: number){
+    this.documentService.getPhysical().subscribe(data => {
       //Check if we are working with multiples documents/image at same time
       if (Object.keys(data).length > 1){
         this.documentService.setAsMultipleOnjects(true);
       }
       //By default we set the first document/image
       this.documentService.setStructureObject(data);
-      this.documentService.setUrlObject(data[docNumber]['url']);  
+      this.documentService.setUrlObject(data[docNumber]['url']);
       this.loadMetadata();
       this.setImageContent()
     });
@@ -121,6 +122,7 @@ export class MultivioLayoutComponent implements OnInit {
       if (event["Doc"] != this.currentDocument){
         this.collapsedMenuComponent.resetThumbList();
         this.currentDocument = event["Doc"];
+        this.documentChanged = true;
       }
     }
     this.anglePage = event["Angle"]
@@ -136,7 +138,7 @@ export class MultivioLayoutComponent implements OnInit {
         break;
       case Display.FitToWidth:
         this.contentWidth = this.maxWidth;
-        this.contentHeight = Math.round(this.maxWidth * this.ratioPage);
+        this.contentHeight = Math.round(this.maxWidth * this.ratioPage);        
         break;
       case Display.FitToHeight:
         this.contentHeight = this.maxHeight;
@@ -161,7 +163,6 @@ export class MultivioLayoutComponent implements OnInit {
         this.documentService.getMetadataDocument().subscribe(res => {
           this.documentService.setMaxPage(res['nPages']);
           this.bottomMenuComponent.maxValuePage = this.documentService.getMaxPage();
-          this.bottomMenuComponent.checkInput();
           this.originalHeight = Math.round(res['nativeSize'][0][1]);
           this.originalWidth  = Math.round(res['nativeSize'][0][0]); 
           this.ratioPage = this.originalHeight / this.originalWidth;   
@@ -172,9 +173,9 @@ export class MultivioLayoutComponent implements OnInit {
         this.documentService.getMetadataImage().subscribe(res => {
           this.documentService.setMaxPage(this.documentService.getStructureObject().length);
           this.bottomMenuComponent.maxValuePage = this.documentService.getMaxPage();
-          this.bottomMenuComponent.checkInput();
           this.originalHeight = Math.round(res['nativeSize'][1]);
           this.originalWidth  = Math.round(res['nativeSize'][0]);
+          this.ratioPage = this.originalHeight / this.originalWidth;  
         });
         break;
     } 
@@ -214,7 +215,7 @@ export class MultivioLayoutComponent implements OnInit {
   //On resized event , called after resize content
   onResized(event: ResizedEvent): void {  //TODO resize?  call getPage? Attention of kind of object
     if( event.newWidth > 0 &&  event.newHeight > 0 && !this.firstRendering){
-      this.contentWidth = event.newWidth ;
+      this.contentWidth = event.newWidth - 100;
       this.contentHeight = event.newHeight - 235;
       this.firstRendering = true;
       //this.setImageContent();
@@ -227,11 +228,12 @@ export class MultivioLayoutComponent implements OnInit {
   setImageContent(){
     switch (this.typeObject) {
       case Type.PDF:
-        if(this.documentService.getAsMultipleOnjects()){
+        if(this.documentService.getAsMultipleOnjects() && this.documentChanged){
           //Get image from document
           this.documentService.setUrlObject(this.documentService.getStructureObject()[this.currentDocument]['url']);
           //Loading news metadata of docuement
           this.loadMetadata();
+          this.documentChanged = false;
         }
         this.documentService.getImageFromDocument(this.currentPage, this.anglePage, this.contentWidth, this.contentHeight).subscribe(data => {
           this.createImageFromBlob(data);
@@ -239,10 +241,7 @@ export class MultivioLayoutComponent implements OnInit {
         });
         break;
       case Type.Image:
-        //Get image
-        this.documentService.setUrlObject(this.documentService.getStructureObject()[this.currentPage-1]['url']);
-        //Loading news metadata of docuement
-        this.loadMetadata();
+        this.documentService.setUrlObject(this.documentService.getStructureObject()[this.currentPage - 1]['url']);
         this.documentService.getImage(this.anglePage, this.contentWidth, this.contentHeight).subscribe(data => {
           this.createImageFromBlob(data);
           this.setSpinnerLoading(false);
