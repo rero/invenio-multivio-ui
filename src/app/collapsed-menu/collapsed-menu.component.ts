@@ -5,7 +5,6 @@ import { DocumentService } from '../document.service';
 import { Menu } from '../enum/menu.enum';
 import { Type } from '../enum/type.enum';
 
-
 @Component({
   selector: 'app-collapsed-menu',
   templateUrl: './collapsed-menu.component.html',
@@ -201,6 +200,7 @@ export class CollapsedMenuComponent implements OnInit {
     this.resultsSearch = [];
     this.inputValue = null;
     this.searchDone = false;
+    this.liClicked = -1;
     this.searchItemClick.emit({ "BBox": this.resultsSearch });
   }
 

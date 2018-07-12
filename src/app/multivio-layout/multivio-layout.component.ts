@@ -7,7 +7,6 @@ import { Menu } from '../enum/menu.enum';
 import { Display } from '../enum/display.enum';
 import { Type } from '../enum/type.enum';
 import { ResizedEvent } from 'angular-resize-event/resized-event';  
-import { resolve } from 'url';
 
 @Component({
   selector: 'app-multivio',
@@ -144,7 +143,7 @@ export class MultivioLayoutComponent implements OnInit {
         this.contentHeight = this.originalHeight;
         break;
     }
-    this.contentComponent.setInfoPage(this.contentHeight / this.originalHeight, this.currentPage); 
+    this.contentComponent.setInfoPage(this.contentHeight / this.originalHeight, this.currentPage, this.anglePage); 
     this.setImageContent();
   }
 
@@ -256,7 +255,7 @@ export class MultivioLayoutComponent implements OnInit {
   //Displaing box on document
   displayBoxSearch(res: any){
     this.contentComponent.setBBox(res);
-    this.contentComponent.setInfoPage(this.contentHeight / this.originalHeight, this.currentPage);
+    this.contentComponent.setInfoPage(this.contentHeight / this.originalHeight, this.currentPage, this.anglePage);
   }
 
   //Stop spinner loading
