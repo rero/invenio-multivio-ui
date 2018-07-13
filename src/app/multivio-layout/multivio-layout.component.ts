@@ -126,6 +126,7 @@ export class MultivioLayoutComponent implements OnInit {
         this.collapsedMenuComponent.resetThumbList();
         this.currentDocument = event["Doc"];
         this.documentChanged = true;
+        this.collapsedMenuComponent.clearResults();
         this.bottomMenuComponent.setCurrentDoc(event["Doc"]);
       }
     }

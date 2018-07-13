@@ -197,7 +197,13 @@ export class CollapsedMenuComponent implements OnInit {
         for (let i = 0; i < res.length; i++) {
           let startString = this.resultsSearch[i]["text"];
           //Put word in bold 
-          let endString = startString.replace(input, '<b>' + input + '</b>');
+          //let endString = startString.replace(/Doppler/i, '<b>' + /input/i + '</b>');
+          var reg = new RegExp(input, "i");
+          let endString = startString.slice(0, startString.search(reg)) +  
+          '<b>' + 
+          startString.slice(startString.search(reg), startString.search(reg) + input.length) + 
+          '</b>'+
+            startString.slice(startString.search(reg) + input.length);
           this.resultsSearch[i]["text"] = endString;
           //Adding for tooltip
           this.resultsSearch[i]["toolTip"] = startString;
