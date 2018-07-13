@@ -44,7 +44,7 @@ export class CollapsedMenuComponent implements OnInit {
   searchDone: boolean = false;
   liClicked: number = -1;
   urlActualDoc: string = "";
-  currentDoc: number = 0;
+  sizeTOC: number = 0;
   nbrDocs: number = 0;
 
   constructor(private documentService:DocumentService) { }
@@ -111,28 +111,66 @@ export class CollapsedMenuComponent implements OnInit {
           this.urlActualDoc = this.documentService.getUrlCurrenObject();
           this.documentService.getPhysical().subscribe(res => {
             this.nbrDocs = Object.keys(res).length;
-            //Parse the 
-            this.parseTOC(res, this.currentDoc);
+            //Asking for the TOC of alls documents
+            for (let i = 0; i < this.nbrDocs; i++) {
+              this.documentService.setUrlCurrentObject(this.documentService.getStructureObject()[i]['url']);
+              this.documentService.getTOC().subscribe(data => {
+                if (data != null) {
+                  let node = {
+                    title: res[i]['label'],
+                    key: (this.counter++).toString(),
+                    page: 1,
+                    doc: i,
+                    children: []
+                  }
+                  for (let j = 0; j < data.length; j++) {
+                    let subNode = {
+                      title: data[j]['label'],
+                      key: (this.counter++).toString(),
+                      doc: i,
+                      page: data[j]['file_position']['index']
+                    }
+                    this.asChildren(data[j], subNode);
+                    node['children'].push(subNode);
+                  }
+                  this.nodesTOC[i] = new NzTreeNode(node);
+                  this.sizeTOC = Object.keys(this.nodesTOC).length;
+                }
+                else {
+                  let node = {
+                    title: res[i]['label'],
+                    key: (this.counter++).toString(),
+                    doc: i,
+                    page: 1,
+                    children: []
+                  }
+                  this.nodesTOC[i]=new NzTreeNode(node);
+                  this.sizeTOC = Object.keys(this.nodesTOC).length;
+                }
+              })
+            } 
+            //Restore information about actual docment
+            this.documentService.setUrlCurrentObject(this.urlActualDoc);
           });
           this.infoTocRetrieved = true;
-          
           break;
         case Type.Image:
           this.documentService.getPhysical().subscribe(res => {
+              this.nbrDocs = Object.keys(res).length;
               for (let i = 0; i < Object.keys(res).length; i++) {
                 let node = {
                   title: res[i]['label'],
                   key: (this.counter++).toString(),
                   page: i + 1
                 }
-                this.nodesTOC.push(new NzTreeNode(node));
+                this.nodesTOC[i] = new NzTreeNode(node);
+                this.sizeTOC = Object.keys(this.nodesTOC).length;
               }
               this.infoTocRetrieved = true;
             });
           break;
         }
       }
-    
   }
 
   //Get the thumbslist, 8 at first loading or less if document as not 8 elements
@@ -159,7 +197,7 @@ export class CollapsedMenuComponent implements OnInit {
         for (let i = 0; i < res.length; i++) {
           let startString = this.resultsSearch[i]["text"];
           //Put word in bold 
-          let endString = startString.replace(/input/i, '<b>' + 'TEST' + '</b>');
+          let endString = startString.replace(input, '<b>' + input + '</b>');
           this.resultsSearch[i]["text"] = endString;
           //Adding for tooltip
           this.resultsSearch[i]["toolTip"] = startString;
@@ -222,7 +260,7 @@ export class CollapsedMenuComponent implements OnInit {
           .subscribe(thumb => {
             let reader = new FileReader();
             reader.addEventListener("load", () => {
-                this.thumbList.push(reader.result);
+              this.thumbList[page - 1] = reader.result;
               }, false
             );
             if (thumb) {
@@ -238,7 +276,7 @@ export class CollapsedMenuComponent implements OnInit {
           .subscribe(thumb => {
             let reader = new FileReader();
             reader.addEventListener("load", () => {
-                this.thumbList.push(reader.result);
+                this.thumbList[page-1] = reader.result;
               }, false
             );
             if (thumb) {
@@ -265,47 +303,4 @@ export class CollapsedMenuComponent implements OnInit {
     this.thumbList = [];
   }
 
-
-  //Parse the TOC recursively to ensure thats data correct filleds
-  parseTOC(res:any,i: number){
-    this.documentService.setUrlCurrentObject(this.documentService.getStructureObject()[i]['url']);
-    this.documentService.getTOC().subscribe(data => {
-      if (data != null) {
-        let node = {
-          title: res[i]['label'],
-          key: (this.counter++).toString(),
-          page: 1,
-          doc: i,
-          children: []
-        }
-        for (let j = 0; j < data.length; j++) {
-          let subNode = {
-            title: data[j]['label'],
-            key: (this.counter++).toString(),
-            doc: i,
-            page: data[j]['file_position']['index']
-          }
-          this.asChildren(data[j], subNode);
-          node['children'].push(subNode);
-        }
-        this.nodesTOC.push(new NzTreeNode(node));
-      }
-      else {
-        let node = {
-          title: res[i]['label'],
-          key: (this.counter++).toString(),
-          doc: i,
-          page: 1,
-          children: []
-        }
-        this.nodesTOC.push(new NzTreeNode(node));
-      }
-      if(this.currentDoc < this.nbrDocs-1) //Counter starts at 0
-        this.parseTOC(res, ++this.currentDoc)
-      else{
-        //Putting the current object as before
-        this.documentService.setUrlCurrentObject(this.urlActualDoc);
-      }
-    })
-  }
 }

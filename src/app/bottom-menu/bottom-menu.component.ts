@@ -42,8 +42,7 @@ export class BottomMenuComponent implements OnInit {
       switch (key) {
         case BottomMenu.DecrementPage:
           if (this.currentPage == this.minValuePage) {
-            if(this.currentDoc >= this.nbrDocs){
-              console.log("<--");
+            if(this.currentDoc > 0){
               this.currentDoc--;
               this.mode = "Back";
             }
@@ -54,8 +53,7 @@ export class BottomMenuComponent implements OnInit {
           break;
         case BottomMenu.FirstPage:
           if (this.currentPage == this.minValuePage) {
-            if (this.currentDoc >= this.nbrDocs) {
-              console.log("<-");
+            if (this.currentDoc > 0) {
               this.currentDoc--;
               this.mode = "Back";
             }
@@ -67,7 +65,6 @@ export class BottomMenuComponent implements OnInit {
         case BottomMenu.IncrementPage:
           if (this.currentPage == this.maxValuePage) {
             if (this.currentDoc < this.nbrDocs) {
-              console.log("->");
               this.currentDoc++;
               this.currentPage = 1;
             }
@@ -79,7 +76,6 @@ export class BottomMenuComponent implements OnInit {
         case BottomMenu.LastPage:
           if (this.currentPage == this.maxValuePage) {
             if (this.currentDoc < this.nbrDocs) {
-              console.log("-->");
               this.currentDoc++;
               this.currentPage = 1;
             }

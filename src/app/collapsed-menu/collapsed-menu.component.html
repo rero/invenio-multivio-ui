@@ -37,11 +37,11 @@
         </ng-container>
         <!--Mode table of contents displayed -->
         <ng-container *ngSwitchCase="Menu.TOC">
-            <nz-tree [(ngModel)]="nodesTOC"
-                [nzShowLine]="false"
-                [nzDefaultExpandedKeys] = "['0']"
-                (nzClick)="onClickTree($event)">
-            </nz-tree>
+            <!--We display the TOC only when all is retrieved -->
+            <div *ngIf="sizeTOC == nbrDocs">
+                <nz-tree [(ngModel)]="nodesTOC" [nzShowLine]="false" [nzDefaultExpandedKeys]="['0']" (nzClick)="onClickTree($event)">
+                </nz-tree>
+            </div>
         </ng-container>
         <!--Mode thumb list displayed -->
         <ng-container *ngSwitchCase="Menu.ThumbPreview">
