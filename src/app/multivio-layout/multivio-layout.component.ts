@@ -47,6 +47,7 @@ export class MultivioLayoutComponent implements OnInit {
   currentDocument: number = 0;
   ratioPage: number = 0;
   documentChanged: boolean = false;
+  modeBack: boolean = false;
 
   constructor(private documentService:DocumentService) { }
 
@@ -76,14 +77,17 @@ export class MultivioLayoutComponent implements OnInit {
   setPhysical(docNumber: number){
     this.documentService.getPhysical().subscribe(data => {
       //Check if we are working with multiples documents/image at same time
-      if (Object.keys(data).length > 1){
+      let nbDoc = Object.keys(data).length;
+      if (nbDoc > 1 && this.typeObject == Type.PDF){
         this.documentService.setAsMultipleOnjects(true);
+        this.bottomMenuComponent.setNumberDocs(nbDoc);
+        this.bottomMenuComponent.setCurrentDoc(docNumber);
       }
       //By default we set the first document/image
       this.documentService.setStructureObject(data);
-      this.documentService.setUrlObject(data[docNumber]['url']);
+      this.documentService.setUrlCurrentObject(data[docNumber]['url']);
       this.loadMetadata();
-      this.setImageContent()
+      //this.setImageContent()
     });
   }
 
@@ -115,16 +119,17 @@ export class MultivioLayoutComponent implements OnInit {
     this.contentComponent.resetBbox();
     //Start spinner loading
     this.setSpinnerLoading(true);
-    //Retrive info from children's
-    this.bottomMenuComponent.currentPage = event["Page"];
-    this.currentPage = event["Page"];
+    //Set actual doc in application
     if(event["Doc"] != null){
       if (event["Doc"] != this.currentDocument){
+        //If we have changed the we reitialize the thumlist preview
         this.collapsedMenuComponent.resetThumbList();
         this.currentDocument = event["Doc"];
         this.documentChanged = true;
+        this.bottomMenuComponent.setCurrentDoc(event["Doc"]);
       }
     }
+    //Setting the angle
     this.anglePage = event["Angle"]
     //Manage event display
     switch (event["Display"]) {
@@ -149,10 +154,31 @@ export class MultivioLayoutComponent implements OnInit {
         this.contentHeight = this.originalHeight;
         break;
     }
-    //Set info for mode search
-    this.contentComponent.setInfoPage(this.contentHeight / this.originalHeight, this.currentPage, this.anglePage); 
-    //Set image
-    this.setImageContent();
+
+    //Retrive info from children's
+    this.bottomMenuComponent.currentPage = event["Page"];
+    this.currentPage = event["Page"];
+    
+    //If we are working with multiples documents we set the new document
+    if (this.documentService.getAsMultipleOnjects() && this.documentChanged) {
+      //Get image from document
+      this.documentService.setUrlCurrentObject(this.documentService.getStructureObject()[this.currentDocument]['url']);
+      //Loading news metadata of docuement
+      if (event["Mode"] == "Back") {
+        //Retrive info from children's
+        this.modeBack = true;
+        this.bottomMenuComponent.currentPage = event["Page"];
+        this.currentPage = event["Page"];
+      }
+      this.loadMetadata();
+      this.documentChanged = false;
+    }
+    else{
+      //Set info for mode search
+      this.contentComponent.setInfoPage(this.contentHeight / this.originalHeight, this.currentPage, this.anglePage);
+      //Set image
+      this.setImageContent();
+    }
   }
 
   //Load info abaout the document (ex. ssizes, number pages, ..)
@@ -166,7 +192,17 @@ export class MultivioLayoutComponent implements OnInit {
           this.originalHeight = Math.round(res['nativeSize'][0][1]);
           this.originalWidth  = Math.round(res['nativeSize'][0][0]); 
           this.ratioPage = this.originalHeight / this.originalWidth;   
-        });
+          if (this.modeBack) {
+            this.currentPage = this.documentService.getMaxPage();
+            this.bottomMenuComponent.currentPage = this.currentPage;
+          }
+          this.modeBack = false;
+          //Set image
+          this.setImageContent();
+          //Set info for mode search
+          this.contentComponent.setInfoPage(this.contentHeight / this.originalHeight, this.currentPage, this.anglePage);
+        }
+      );
         break;
       case Type.Image:
         //Get metadata from object of type image/jpeg
@@ -175,7 +211,11 @@ export class MultivioLayoutComponent implements OnInit {
           this.bottomMenuComponent.maxValuePage = this.documentService.getMaxPage();
           this.originalHeight = Math.round(res['nativeSize'][1]);
           this.originalWidth  = Math.round(res['nativeSize'][0]);
-          this.ratioPage = this.originalHeight / this.originalWidth;  
+          this.ratioPage = this.originalHeight / this.originalWidth;
+          //Set image
+          this.setImageContent();
+          //Set info for mode search
+          this.contentComponent.setInfoPage(this.contentHeight / this.originalHeight, this.currentPage, this.anglePage);
         });
         break;
     } 
@@ -228,20 +268,13 @@ export class MultivioLayoutComponent implements OnInit {
   setImageContent(){
     switch (this.typeObject) {
       case Type.PDF:
-        if(this.documentService.getAsMultipleOnjects() && this.documentChanged){
-          //Get image from document
-          this.documentService.setUrlObject(this.documentService.getStructureObject()[this.currentDocument]['url']);
-          //Loading news metadata of docuement
-          this.loadMetadata();
-          this.documentChanged = false;
-        }
         this.documentService.getImageFromDocument(this.currentPage, this.anglePage, this.contentWidth, this.contentHeight).subscribe(data => {
           this.createImageFromBlob(data);
           this.setSpinnerLoading(false);
         });
         break;
       case Type.Image:
-        this.documentService.setUrlObject(this.documentService.getStructureObject()[this.currentPage - 1]['url']);
+        this.documentService.setUrlCurrentObject(this.documentService.getStructureObject()[this.currentPage - 1]['url']);
         this.documentService.getImage(this.anglePage, this.contentWidth, this.contentHeight).subscribe(data => {
           this.createImageFromBlob(data);
           this.setSpinnerLoading(false);

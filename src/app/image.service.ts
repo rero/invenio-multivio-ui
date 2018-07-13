@@ -48,12 +48,12 @@ export class ImageService{
   }
 
   /** SET url document from the document for the service */
-  setUrlObject(url: string){
+  setUrlCurrentObject(url: string){
     this.urlCurrentObject = url;
   }
 
   /** GET url document from the document for the service */
-  getUrlObject(): string{
+  getUrlCurrenObject(): string{
     return this.urlCurrentObject;
   }
 
