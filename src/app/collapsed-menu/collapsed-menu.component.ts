@@ -43,6 +43,9 @@ export class CollapsedMenuComponent implements OnInit {
   typeObject: string ;
   searchDone: boolean = false;
   liClicked: number = -1;
+  urlActualDoc: string = "";
+  currentDoc: number = 0;
+  nbrDocs: number = 0;
 
   constructor(private documentService:DocumentService) { }
 
@@ -105,44 +108,14 @@ export class CollapsedMenuComponent implements OnInit {
         //We have 2 modes PDF or Image
         case Type.PDF:
           //Retrieve TOC from PDF 
+          this.urlActualDoc = this.documentService.getUrlCurrenObject();
           this.documentService.getPhysical().subscribe(res => {
-            for (let i = 0; i < Object.keys(res).length; i++) {
-              this.documentService.setUrlObject(this.documentService.getStructureObject()[i]['url']);
-              this.documentService.getTOC().subscribe(data => {
-                if (data != null) {
-                  let node = {
-                    title: res[i]['label'],
-                    key: (this.counter++).toString(),
-                    page: 1,
-                    doc: i,
-                    children: []
-                  }
-                  for (let j = 0; j < data.length; j++) {
-                    let subNode = {
-                      title: data[j]['label'],
-                      key: (this.counter++).toString(),
-                      doc: i,
-                      page: data[j]['file_position']['index']
-                    }
-                    this.asChildren(data[j], subNode);
-                    node['children'].push(subNode);
-                  }
-                  this.nodesTOC.push(new NzTreeNode(node));
-                }
-                else {
-                  let node = {
-                    title: res[i]['label'],
-                    key: (this.counter++).toString(),
-                    doc: i,
-                    page: 1,
-                    children: []
-                  }
-                  this.nodesTOC.push(new NzTreeNode(node));
-                }
-              })
-            }
+            this.nbrDocs = Object.keys(res).length;
+            //Parse the 
+            this.parseTOC(res, this.currentDoc);
           });
           this.infoTocRetrieved = true;
+          
           break;
         case Type.Image:
           this.documentService.getPhysical().subscribe(res => {
@@ -159,7 +132,7 @@ export class CollapsedMenuComponent implements OnInit {
           break;
         }
       }
-     
+    
   }
 
   //Get the thumbslist, 8 at first loading or less if document as not 8 elements
@@ -260,7 +233,7 @@ export class CollapsedMenuComponent implements OnInit {
       //Mode Image
       case Type.Image:
         let structure = this.documentService.getStructureObject();
-        this.documentService.setUrlObject(structure[page-1]['url']);
+        this.documentService.setUrlCurrentObject(structure[page-1]['url']);
         this.documentService.getImage(0,150,150)  
           .subscribe(thumb => {
             let reader = new FileReader();
@@ -290,5 +263,49 @@ export class CollapsedMenuComponent implements OnInit {
   resetThumbList(){
     this.thumbnailsRetrieved = false;
     this.thumbList = [];
+  }
+
+
+  //Parse the TOC recursively to ensure thats data correct filleds
+  parseTOC(res:any,i: number){
+    this.documentService.setUrlCurrentObject(this.documentService.getStructureObject()[i]['url']);
+    this.documentService.getTOC().subscribe(data => {
+      if (data != null) {
+        let node = {
+          title: res[i]['label'],
+          key: (this.counter++).toString(),
+          page: 1,
+          doc: i,
+          children: []
+        }
+        for (let j = 0; j < data.length; j++) {
+          let subNode = {
+            title: data[j]['label'],
+            key: (this.counter++).toString(),
+            doc: i,
+            page: data[j]['file_position']['index']
+          }
+          this.asChildren(data[j], subNode);
+          node['children'].push(subNode);
+        }
+        this.nodesTOC.push(new NzTreeNode(node));
+      }
+      else {
+        let node = {
+          title: res[i]['label'],
+          key: (this.counter++).toString(),
+          doc: i,
+          page: 1,
+          children: []
+        }
+        this.nodesTOC.push(new NzTreeNode(node));
+      }
+      if(this.currentDoc < this.nbrDocs-1) //Counter starts at 0
+        this.parseTOC(res, ++this.currentDoc)
+      else{
+        //Putting the current object as before
+        this.documentService.setUrlCurrentObject(this.urlActualDoc);
+      }
+    })
   }
 }
