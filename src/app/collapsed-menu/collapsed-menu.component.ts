@@ -1,7 +1,9 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { trigger,state,style,transition,animate } from '@angular/animations';
 import { NzTreeNode } from 'ng-zorro-antd';
-import { DocumentService } from '../document.service';
+import { DocumentService } from '../services/document.service';
+import { ImageService } from '../services/image.service';
+import { BaseService } from '../services/base.service';
 import { Menu } from '../enum/menu.enum';
 import { Type } from '../enum/type.enum';
 
@@ -46,13 +48,15 @@ export class CollapsedMenuComponent implements OnInit {
   urlActualDoc: string = "";
   sizeTOC: number = 0;
   nbrDocs: number = 0;
+  isMixedObjects: boolean = false;
 
-  constructor(private documentService:DocumentService) { }
+  constructor(private documentService: DocumentService, private imageService: ImageService, private baseService: BaseService) { }
 
   ngOnInit(){ }
 
   //Display or hide the menu
-  collapse(e: Menu, type: string) {
+  collapse(e: Menu, type: string, mixed: boolean) {
+    this.isMixedObjects = mixed;
     this.typeObject = type;
     //Dipatch the action on click
     this.dispatchMenu(e)
@@ -108,12 +112,12 @@ export class CollapsedMenuComponent implements OnInit {
         //We have 2 modes PDF or Image
         case Type.PDF:
           //Retrieve TOC from PDF 
-          this.urlActualDoc = this.documentService.getUrlCurrenObject();
-          this.documentService.getPhysical().subscribe(res => {
+          this.urlActualDoc = this.baseService.getUrlCurrenObject();
+          this.baseService.getPhysical().subscribe(res => {
             this.nbrDocs = Object.keys(res).length;
             //Asking for the TOC of alls documents
             for (let i = 0; i < this.nbrDocs; i++) {
-              this.documentService.setUrlCurrentObject(this.documentService.getStructureObject()[i]['url']);
+              this.baseService.setUrlCurrentObject(this.baseService.getStructureObject()[i]['url']);
               this.documentService.getTOC().subscribe(data => {
                 if (data != null) {
                   let node = {
@@ -150,12 +154,12 @@ export class CollapsedMenuComponent implements OnInit {
               })
             } 
             //Restore information about actual docment
-            this.documentService.setUrlCurrentObject(this.urlActualDoc);
+            this.baseService.setUrlCurrentObject(this.urlActualDoc);
           });
           this.infoTocRetrieved = true;
           break;
         case Type.Image:
-          this.documentService.getPhysical().subscribe(res => {
+          this.baseService.getPhysical().subscribe(res => {
               this.nbrDocs = Object.keys(res).length;
               for (let i = 0; i < Object.keys(res).length; i++) {
                 let node = {
@@ -175,9 +179,9 @@ export class CollapsedMenuComponent implements OnInit {
 
   //Get the thumbslist, 8 at first loading or less if document as not 8 elements
   getThumbsPreview(){
-    if(!this.thumbnailsRetrieved){
-      if(this.thumbListMaxIndex > this.documentService.getMaxPage()){
-        this.thumbListMaxIndex = this.documentService.getMaxPage()
+    if (!this.thumbnailsRetrieved){
+      if (this.thumbListMaxIndex > this.baseService.getMaxPage()){
+        this.thumbListMaxIndex = this.baseService.getMaxPage()
       }
       for (let page = 1; page <= this.thumbListMaxIndex; page++) { 
         this.getThumbImages(page);
@@ -197,12 +201,11 @@ export class CollapsedMenuComponent implements OnInit {
         for (let i = 0; i < res.length; i++) {
           let startString = this.resultsSearch[i]["text"];
           //Put word in bold 
-          //let endString = startString.replace(/Doppler/i, '<b>' + /input/i + '</b>');
           var reg = new RegExp(input, "i");
           let endString = startString.slice(0, startString.search(reg)) +  
-          '<b>' + 
-          startString.slice(startString.search(reg), startString.search(reg) + input.length) + 
-          '</b>'+
+            '<b>' + 
+            startString.slice(startString.search(reg), startString.search(reg) + input.length) + 
+            '</b>'+
             startString.slice(startString.search(reg) + input.length);
           this.resultsSearch[i]["text"] = endString;
           //Adding for tooltip
@@ -251,7 +254,7 @@ export class CollapsedMenuComponent implements OnInit {
   onIntersection(event : any) {
     if(event.target.id == this.thumbListMaxIndex 
         && event.visible == true 
-        && this.thumbListMaxIndex < this.documentService.getMaxPage()){
+      && this.thumbListMaxIndex < this.baseService.getMaxPage()){
       this.thumbListMaxIndex++;
       this.getThumbImages(this.thumbListMaxIndex);
     }
@@ -276,9 +279,13 @@ export class CollapsedMenuComponent implements OnInit {
         break;
       //Mode Image
       case Type.Image:
-        let structure = this.documentService.getStructureObject();
-        this.documentService.setUrlCurrentObject(structure[page-1]['url']);
-        this.documentService.getImage(0,150,150)  
+        if(this.isMixedObjects)
+          this.baseService.setUrlCurrentObject(this.baseService.getUrlCurrenObject());
+        else{
+          let structure = this.baseService.getStructureObject();
+          this.baseService.setUrlCurrentObject(structure[page-1]['url']);
+        }  
+        this.imageService.getImage(0,150,150)  
           .subscribe(thumb => {
             let reader = new FileReader();
             reader.addEventListener("load", () => {

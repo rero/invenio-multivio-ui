@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
 import { UrlPrefixService } from './url-prefix.service';
 import { HttpClient, } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
-@Injectable()
-export class ImageService{
+@Injectable({
+  providedIn: 'root'
+})
 
-  constructor(protected http: HttpClient, protected urlPrefix: UrlPrefixService) { }
-  
+export class BaseService {
+
   protected asMultiplesObjects: boolean = false;
   protected structureObject: any;
   protected urlCurrentObject: string = '';
@@ -15,28 +16,10 @@ export class ImageService{
   protected maxPages: number = 0;
   protected prefixMetadata: string = '';
   protected prefixPhysical: string = '';
-  
-  /** GET image from server */
-  getImage(angle: number, maxWidth: number, minHeight:number): Observable<Blob> {
-    let query = "";
-    query += '?angle='+angle;
-    if(maxWidth > 0)
-      query += '&max_width='+maxWidth;
-    if(minHeight > 0)
-      query += '&max_height='+minHeight;
-    return this.http.get(this.urlPrefix.imageRender + this.urlCurrentObject+ query, {responseType: 'blob'});
-  }
+  protected listTypeObjects: any = [];
 
-  /** GET metadata from the document */
-  getMetadataImage(): Observable<Object[]> {
-    return this.http.get<Object[]>(this.urlPrefix.metadataImage + this.urlCurrentObject);
-  }
+  constructor(protected http: HttpClient, protected urlPrefix: UrlPrefixService) { }
 
-  /** Download the image */
-  downloadImage(){
-    return this.http.get(this.urlPrefix.downloadImage + this.urlCurrentObject, {responseType: 'blob'});
-  }
-  
   /** GET metadata from json or xml */
   getMetadata(): Observable<Object> {
     return this.http.get<Object[]>(this.prefixMetadata + this.url);
@@ -48,40 +31,40 @@ export class ImageService{
   }
 
   /** SET url document from the document for the service */
-  setUrlCurrentObject(url: string){
+  setUrlCurrentObject(url: string) {
     this.urlCurrentObject = url;
   }
 
   /** GET url document from the document for the service */
-  getUrlCurrenObject(): string{
+  getUrlCurrenObject(): string {
     return this.urlCurrentObject;
   }
 
   /** SET url of document  for the service */
-  setUrl(url: string){
+  setUrl(url: string) {
     this.url = url;
-    if (this.url.endsWith(".json/")){
+    if (this.url.endsWith(".json/")) {
       this.prefixMetadata = this.urlPrefix.metadataJSON;
       this.prefixPhysical = this.urlPrefix.physicalJSON
     }
-    else{
+    else {
       this.prefixMetadata = this.urlPrefix.metadataXML;
       this.prefixPhysical = this.urlPrefix.physicalXML;
     }
   }
 
   /** GET url json of document from the document for the service */
-  getUrl(): string{
+  getUrl(): string {
     return this.url;
   }
 
   /** SET max page */
-  setMaxPage(pages: number){
+  setMaxPage(pages: number) {
     this.maxPages = pages;
   }
 
   /** GET max page */
-  getMaxPage(): number{
+  getMaxPage(): number {
     return this.maxPages;
   }
 
@@ -95,13 +78,23 @@ export class ImageService{
     return this.structureObject;
   }
 
+  /** SET structure */
+  setListTypeObjects(struc: any) {
+    this.listTypeObjects = struc;
+  }
+
+  /** SET structure */
+  getListTypeObjects() {
+    return this.listTypeObjects;
+  }
+
   /** SET info about of multiple structure */
-  setAsMultipleOnjects(isMultiple: boolean){
+  setAsMultipleObjects(isMultiple: boolean) {
     this.asMultiplesObjects = isMultiple;
   }
 
   /** GET info about struture object */
-  getAsMultipleOnjects(): boolean {
+  getAsMultipleObjects(): boolean {
     return this.asMultiplesObjects;
   }
 }

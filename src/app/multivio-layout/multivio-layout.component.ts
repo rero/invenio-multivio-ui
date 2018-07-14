@@ -2,11 +2,14 @@ import { Component, OnInit , ViewChild, Input} from '@angular/core';
 import { CollapsedMenuComponent } from '../collapsed-menu/collapsed-menu.component';
 import { BottomMenuComponent } from '../bottom-menu/bottom-menu.component';
 import { ContentComponent } from '../content/content.component';
-import { DocumentService } from '../document.service';
+import { DocumentService } from '../services/document.service';
+import { ImageService } from '../services/image.service';
+import { BaseService } from '../services/base.service';
 import { Menu } from '../enum/menu.enum';
 import { Display } from '../enum/display.enum';
 import { Type } from '../enum/type.enum';
 import { ResizedEvent } from 'angular-resize-event/resized-event';  
+
 
 @Component({
   selector: 'app-multivio',
@@ -42,6 +45,7 @@ export class MultivioLayoutComponent implements OnInit {
   anglePage: number = 0;
   firstRendering: boolean = false;
   typeObject: string = "";
+  mixedObjects: boolean = false;
   metadataInfo: any;
   isLoading: boolean = true;
   currentDocument: number = 0;
@@ -49,21 +53,23 @@ export class MultivioLayoutComponent implements OnInit {
   documentChanged: boolean = false;
   modeBack: boolean = false;
 
-  constructor(private documentService:DocumentService) { }
+  constructor(private documentService: DocumentService, private imageService: ImageService, private baseService: BaseService) { }
 
   ngOnInit() {
     //Setting url metadata (JSON or XML )
-    this.documentService.setUrl(this.url);
+    this.baseService.setUrl(this.url);
     //Get metadata Json 
     this.setMetada();
   }
 
   //Getting info from JSON
   setMetada(){
-    this.documentService.getMetadata().subscribe(res => {
+    this.baseService.getMetadata().subscribe(res => {
       this.metadataInfo = res;
       //Set type of object
-      this.typeObject = res['mime']
+      this.baseService.setListTypeObjects(res['mime_docs']);
+      this.mixedObjects = !res['mime_docs'].reduce(function (a, b) { return (a === b) ? a : NaN; });
+      this.typeObject = this.baseService.getListTypeObjects()[0]
       //Setting title info
       this.title = res['title'];
       //Setting creator info
@@ -75,26 +81,25 @@ export class MultivioLayoutComponent implements OnInit {
 
   //Getting physical info from JSON
   setPhysical(docNumber: number){
-    this.documentService.getPhysical().subscribe(data => {
+    this.baseService.getPhysical().subscribe(data => {
       //Check if we are working with multiples documents/image at same time
       let nbDoc = Object.keys(data).length;
-      if (nbDoc > 1 && this.typeObject == Type.PDF){
-        this.documentService.setAsMultipleOnjects(true);
+      if (nbDoc > 1 && this.mixedObjects || this.typeObject == Type.PDF){
+        this.baseService.setAsMultipleObjects(true);
         this.bottomMenuComponent.setNumberDocs(nbDoc);
         this.bottomMenuComponent.setCurrentDoc(docNumber);
       }
       //By default we set the first document/image
-      this.documentService.setStructureObject(data);
-      this.documentService.setUrlCurrentObject(data[docNumber]['url']);
+      this.baseService.setStructureObject(data);
+      this.baseService.setUrlCurrentObject(data[docNumber]['url']);
       this.loadMetadata();
-      //this.setImageContent()
     });
   }
 
   //Dipspatch click on menu
   onMenuClick(e:Menu) {
     if(e != Menu.BottomMenuVisible && e != Menu.Download){
-      this.collapsedMenuComponent.collapse(e, this.typeObject);
+      this.collapsedMenuComponent.collapse(e, this.typeObject, this.mixedObjects);
     }
     else{
       switch (e) {
@@ -128,42 +133,49 @@ export class MultivioLayoutComponent implements OnInit {
         this.documentChanged = true;
         this.collapsedMenuComponent.clearResults();
         this.bottomMenuComponent.setCurrentDoc(event["Doc"]);
+        this.typeObject = this.baseService.getListTypeObjects()[event["Doc"]];
+        this.collapsedMenuComponent.typeObject = this.typeObject;
       }
     }
     //Setting the angle
-    this.anglePage = event["Angle"]
+    this.anglePage = event["Angle"];
     //Manage event display
     switch (event["Display"]) {
       case Display.ZoomIn:
-        this.contentWidth = Math.round(this.contentWidth + this.contentWidth / 100 * 20)
-        this.contentHeight = Math.round(this.contentHeight + this.contentHeight / 100 * 20)
+        //By default zoom-in is set to + 20%
+        this.contentWidth = Math.round(this.contentWidth + this.contentWidth / 100 * 20);
+        this.contentHeight = Math.round(this.contentHeight + this.contentHeight / 100 * 20);
         break;
       case Display.ZoomOut:
-        this.contentWidth = Math.round(this.contentWidth - this.contentWidth / 100 * 20)
-        this.contentHeight = Math.round(this.contentHeight - this.contentHeight / 100 * 20)
+        //By default zoom-ou is set to - 20%
+        this.contentWidth = Math.round(this.contentWidth - this.contentWidth / 100 * 20);
+        this.contentHeight = Math.round(this.contentHeight - this.contentHeight / 100 * 20);
         break;
       case Display.FitToWidth:
         this.contentWidth = this.maxWidth;
+        //Calculating height with ratio
         this.contentHeight = Math.round(this.maxWidth * this.ratioPage);        
         break;
       case Display.FitToHeight:
         this.contentHeight = this.maxHeight;
+        //Calculating with with ratio
         this.contentWidth = Math.round(this.maxHeight / this.ratioPage);
         break;
       case Display.OriginalSize:
+        //Set content to original sizes
         this.contentWidth = this.originalWidth;
         this.contentHeight = this.originalHeight;
         break;
     }
-
-    //Retrive info from children's
+    //Update info about current page
     this.bottomMenuComponent.currentPage = event["Page"];
     this.currentPage = event["Page"];
-    
-    //If we are working with multiples documents we set the new document
-    if (this.documentService.getAsMultipleOnjects() && this.documentChanged) {
+    //If we are working with multiples documents, set the new document
+    if (this.baseService.getAsMultipleObjects() && this.documentChanged) {
       //Get image from document
-      this.documentService.setUrlCurrentObject(this.documentService.getStructureObject()[this.currentDocument]['url']);
+      if (this.typeObject == Type.PDF || this.mixedObjects){
+        this.baseService.setUrlCurrentObject(this.baseService.getStructureObject()[this.currentDocument]['url']);  
+      }
       //Loading news metadata of docuement
       if (event["Mode"] == "Back") {
         //Retrive info from children's
@@ -172,9 +184,12 @@ export class MultivioLayoutComponent implements OnInit {
         this.currentPage = event["Page"];
       }
       this.loadMetadata();
-      this.documentChanged = false;
     }
     else{
+      //Setting the current object (mode image)
+      if (!this.mixedObjects && this.typeObject == Type.Image){
+        this.baseService.setUrlCurrentObject(this.baseService.getStructureObject()[this.currentPage - 1]['url']); 
+      }
       //Set info for mode search
       this.contentComponent.setInfoPage(this.contentHeight / this.originalHeight, this.currentPage, this.anglePage);
       //Set image
@@ -188,35 +203,46 @@ export class MultivioLayoutComponent implements OnInit {
       case Type.PDF:
         //Get metadata from object of type PDF
         this.documentService.getMetadataDocument().subscribe(res => {
-          this.documentService.setMaxPage(res['nPages']);
-          this.bottomMenuComponent.maxValuePage = this.documentService.getMaxPage();
+          this.baseService.setMaxPage(res['nPages']);
+          this.bottomMenuComponent.maxValuePage = this.baseService.getMaxPage();
           this.originalHeight = Math.round(res['nativeSize'][0][1]);
           this.originalWidth  = Math.round(res['nativeSize'][0][0]); 
           this.ratioPage = this.originalHeight / this.originalWidth;   
           if (this.modeBack) {
-            this.currentPage = this.documentService.getMaxPage();
+            this.currentPage = this.baseService.getMaxPage();
             this.bottomMenuComponent.currentPage = this.currentPage;
           }
-          this.modeBack = false;
+          if (this.documentChanged == true && this.collapsedMenuComponent.collapsed) {
+            this.collapsedMenuComponent.getThumbsPreview();
+          }
           //Set image
           this.setImageContent();
           //Set info for mode search
           this.contentComponent.setInfoPage(this.contentHeight / this.originalHeight, this.currentPage, this.anglePage);
+          this.documentChanged = false; 
+          this.modeBack = false;
         }
       );
         break;
       case Type.Image:
         //Get metadata from object of type image/jpeg
-        this.documentService.getMetadataImage().subscribe(res => {
-          this.documentService.setMaxPage(this.documentService.getStructureObject().length);
-          this.bottomMenuComponent.maxValuePage = this.documentService.getMaxPage();
+        this.imageService.getMetadataImage().subscribe(res => {
+          if(this.mixedObjects)
+            this.baseService.setMaxPage(1);
+          else
+            this.baseService.setMaxPage(this.baseService.getStructureObject().length);
+          this.bottomMenuComponent.maxValuePage = this.baseService.getMaxPage();
           this.originalHeight = Math.round(res['nativeSize'][1]);
           this.originalWidth  = Math.round(res['nativeSize'][0]);
           this.ratioPage = this.originalHeight / this.originalWidth;
+          if (this.documentChanged == true && this.collapsedMenuComponent.collapsed) {
+            this.collapsedMenuComponent.getThumbsPreview();
+          } 
           //Set image
           this.setImageContent();
           //Set info for mode search
           this.contentComponent.setInfoPage(this.contentHeight / this.originalHeight, this.currentPage, this.anglePage);
+          this.documentChanged = false; 
         });
         break;
     } 
@@ -233,7 +259,7 @@ export class MultivioLayoutComponent implements OnInit {
         break;
       case Type.Image:
         //Download the image
-        this.documentService.downloadImage().subscribe(data => {
+        this.imageService.downloadImage().subscribe(data => {
           this.createObjectURL(data);
         });
         break;
@@ -275,8 +301,7 @@ export class MultivioLayoutComponent implements OnInit {
         });
         break;
       case Type.Image:
-        this.documentService.setUrlCurrentObject(this.documentService.getStructureObject()[this.currentPage - 1]['url']);
-        this.documentService.getImage(this.anglePage, this.contentWidth, this.contentHeight).subscribe(data => {
+        this.imageService.getImage(this.anglePage, this.contentWidth, this.contentHeight).subscribe(data => {
           this.createImageFromBlob(data);
           this.setSpinnerLoading(false);
         });        

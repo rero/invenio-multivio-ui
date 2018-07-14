@@ -2,7 +2,6 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { BottomMenu } from '../enum/bottom-menu.enum';
 import { Display } from '../enum/display.enum';
 import { NzMessageService } from 'ng-zorro-antd';
-import { DocumentService } from '../document.service';
 
 @Component({
   selector: 'app-bottom-menu',
@@ -37,7 +36,7 @@ export class BottomMenuComponent implements OnInit {
 
   //Dispatch on bottom menu click
   onMenuClick(key: BottomMenu){
-    //Update image content on option clicked
+    //Update image content on option clicked (emit to parent)
     if(this.currentPage <= this.maxValuePage && this.currentPage >= this.minValuePage){
       switch (key) {
         case BottomMenu.DecrementPage:
@@ -117,7 +116,7 @@ export class BottomMenuComponent implements OnInit {
     }
   }
 
-  //Get page from input
+  //Get page from input 
   getPage(nrPage: number){
     if(nrPage <= this.maxValuePage && nrPage >= this.minValuePage){
       this.currentPage = nrPage;
@@ -136,10 +135,12 @@ export class BottomMenuComponent implements OnInit {
     this.pageChanged.emit({"Page":this.currentPage,"Angle": this.currentAngle,"Display": this.typeDisplay});
   }
 
+  //Set numbers of documents in the app
   setNumberDocs(nbr: number){
     this.nbrDocs = nbr - 1;
   }
 
+  //Set actual document in app
   setCurrentDoc(nbr: number){
     this.currentDoc = nbr;
   }

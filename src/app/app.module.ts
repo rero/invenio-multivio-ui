@@ -12,9 +12,10 @@ import { BottomMenuComponent } from './bottom-menu/bottom-menu.component';
 import { ContentComponent } from './content/content.component';
 import { MultivioLayoutComponent } from './multivio-layout/multivio-layout.component';
 import { CollapsedMenuComponent } from './collapsed-menu/collapsed-menu.component';
-import { DocumentService } from './document.service';
-import { ImageService } from './image.service';
-import { UrlPrefixService } from './url-prefix.service';
+import { DocumentService } from './services/document.service';
+import { ImageService } from './services/image.service';
+import { BaseService } from './services/base.service';
+import { UrlPrefixService } from './services/url-prefix.service';
 import { InViewportModule } from 'ng-in-viewport';
 
 registerLocaleData(fr);
@@ -36,7 +37,7 @@ registerLocaleData(fr);
     AngularResizedEventModule,
     InViewportModule
   ],
-  providers: [DocumentService, ImageService, UrlPrefixService, { provide: NZ_I18N, useValue: fr_FR }],
+  providers: [BaseService, DocumentService, ImageService, UrlPrefixService, { provide: NZ_I18N, useValue: fr_FR }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
