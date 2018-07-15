@@ -17,6 +17,7 @@ export class BaseService {
   protected prefixMetadata: string = '';
   protected prefixPhysical: string = '';
   protected listTypeObjects: any = [];
+  protected physicalInMemory: Object;
 
   constructor(protected http: HttpClient, protected urlPrefix: UrlPrefixService) { }
 
@@ -96,5 +97,15 @@ export class BaseService {
   /** GET info about struture object */
   getAsMultipleObjects(): boolean {
     return this.asMultiplesObjects;
+  }
+
+  /** SET the physical into memory */
+  setPhysicalInMemory(data: Object){
+    this.physicalInMemory = data;
+  }
+
+  /** GET the physical from memory */
+  getPhysicalInMemory(): Object {
+    return this.physicalInMemory;
   }
 }

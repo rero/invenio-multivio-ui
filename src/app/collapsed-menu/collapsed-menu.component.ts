@@ -48,7 +48,7 @@ export class CollapsedMenuComponent implements OnInit {
   urlActualDoc: string = "";
   sizeTOC: number = 0;
   nbrDocs: number = 0;
-  isMixedObjects: boolean = false;
+  hasMixedObjects: boolean = false;
 
   constructor(private documentService: DocumentService, private imageService: ImageService, private baseService: BaseService) { }
 
@@ -56,7 +56,7 @@ export class CollapsedMenuComponent implements OnInit {
 
   //Display or hide the menu
   collapse(e: Menu, type: string, mixed: boolean) {
-    this.isMixedObjects = mixed;
+    this.hasMixedObjects = mixed;
     this.typeObject = type;
     //Dipatch the action on click
     this.dispatchMenu(e)
@@ -108,73 +108,37 @@ export class CollapsedMenuComponent implements OnInit {
   //Retrieve the table of contents of documents if exists
   getTOC(){
     if(!this.infoTocRetrieved){
-      switch (this.typeObject){
-        //We have 2 modes PDF or Image
-        case Type.PDF:
-          //Retrieve TOC from PDF 
-          this.urlActualDoc = this.baseService.getUrlCurrenObject();
-          this.baseService.getPhysical().subscribe(res => {
-            this.nbrDocs = Object.keys(res).length;
-            //Asking for the TOC of alls documents
-            for (let i = 0; i < this.nbrDocs; i++) {
-              this.baseService.setUrlCurrentObject(this.baseService.getStructureObject()[i]['url']);
-              this.documentService.getTOC().subscribe(data => {
-                if (data != null) {
-                  let node = {
-                    title: res[i]['label'],
-                    key: (this.counter++).toString(),
-                    page: 1,
-                    doc: i,
-                    children: []
-                  }
-                  for (let j = 0; j < data.length; j++) {
-                    let subNode = {
-                      title: data[j]['label'],
-                      key: (this.counter++).toString(),
-                      doc: i,
-                      page: data[j]['file_position']['index']
-                    }
-                    this.asChildren(data[j], subNode);
-                    node['children'].push(subNode);
-                  }
-                  this.nodesTOC[i] = new NzTreeNode(node);
-                  this.sizeTOC = Object.keys(this.nodesTOC).length;
-                }
-                else {
-                  let node = {
-                    title: res[i]['label'],
-                    key: (this.counter++).toString(),
-                    doc: i,
-                    page: 1,
-                    children: []
-                  }
-                  this.nodesTOC[i]=new NzTreeNode(node);
-                  this.sizeTOC = Object.keys(this.nodesTOC).length;
-                }
-              })
-            } 
+      
+      var res;
+
+      this.nbrDocs = Object.keys(this.baseService.getPhysicalInMemory()).length
+      for (let i = 0; i < this.nbrDocs; i++) {
+        this.typeObject = this.baseService.getListTypeObjects()[i]
+        res = this.baseService.getPhysicalInMemory()[i] 
+        switch (this.typeObject) {
+          //We have 2 modes PDF or Image
+          case Type.PDF:
+            //Retrieve TOC from PDF 
+            this.urlActualDoc = this.baseService.getUrlCurrenObject();
+            this.parseTocPDF(res, i);
             //Restore information about actual docment
             this.baseService.setUrlCurrentObject(this.urlActualDoc);
-          });
-          this.infoTocRetrieved = true;
-          break;
-        case Type.Image:
-          this.baseService.getPhysical().subscribe(res => {
-              this.nbrDocs = Object.keys(res).length;
-              for (let i = 0; i < Object.keys(res).length; i++) {
-                let node = {
-                  title: res[i]['label'],
-                  key: (this.counter++).toString(),
-                  page: i + 1
-                }
-                this.nodesTOC[i] = new NzTreeNode(node);
-                this.sizeTOC = Object.keys(this.nodesTOC).length;
-              }
-              this.infoTocRetrieved = true;
-            });
-          break;
+            this.infoTocRetrieved = true;
+            break;
+          case Type.Image:
+            let node = {
+              title: res['label'],
+              key: (this.counter++).toString(),
+              page: i + 1
+            }
+            this.nodesTOC[i] = new NzTreeNode(node);
+            this.sizeTOC = Object.keys(this.nodesTOC).length;
+            
+            this.infoTocRetrieved = true;
+            break;
         }
       }
+    } 
   }
 
   //Get the thumbslist, 8 at first loading or less if document as not 8 elements
@@ -279,7 +243,7 @@ export class CollapsedMenuComponent implements OnInit {
         break;
       //Mode Image
       case Type.Image:
-        if(this.isMixedObjects)
+        if(this.hasMixedObjects)
           this.baseService.setUrlCurrentObject(this.baseService.getUrlCurrenObject());
         else{
           let structure = this.baseService.getStructureObject();
@@ -314,6 +278,44 @@ export class CollapsedMenuComponent implements OnInit {
   resetThumbList(){
     this.thumbnailsRetrieved = false;
     this.thumbList = [];
+  }
+
+  parseTocPDF(res: Object, i: number){
+    this.baseService.setUrlCurrentObject(this.baseService.getStructureObject()[i]['url']);
+    this.documentService.getTOC().subscribe(data => {
+      if (data != null) {
+        let node = {
+          title: res['label'],
+          key: (this.counter++).toString(),
+          page: 1,
+          doc: i,
+          children: []
+        }
+        for (let j = 0; j < data.length; j++) {
+          let subNode = {
+            title: data[j]['label'],
+            key: (this.counter++).toString(),
+            doc: i,
+            page: data[j]['file_position']['index']
+          }
+          this.asChildren(data[j], subNode);
+          node['children'].push(subNode);
+        }
+        this.nodesTOC[i] = new NzTreeNode(node);
+        this.sizeTOC = Object.keys(this.nodesTOC).length;
+      }
+      else {
+        let node = {
+          title: res['label'],
+          key: (this.counter++).toString(),
+          doc: i,
+          page: 1,
+          children: []
+        }
+        this.nodesTOC[i] = new NzTreeNode(node);
+        this.sizeTOC = Object.keys(this.nodesTOC).length;
+      }
+    });
   }
 
 }

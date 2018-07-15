@@ -45,8 +45,7 @@ export class MultivioLayoutComponent implements OnInit {
   anglePage: number = 0;
   firstRendering: boolean = false;
   typeObject: string = "";
-  mixedObjects: boolean = false;
-  metadataInfo: any;
+  hasMixedObjects: boolean = false;
   isLoading: boolean = true;
   currentDocument: number = 0;
   ratioPage: number = 0;
@@ -65,10 +64,9 @@ export class MultivioLayoutComponent implements OnInit {
   //Getting info from JSON
   setMetada(){
     this.baseService.getMetadata().subscribe(res => {
-      this.metadataInfo = res;
       //Set type of object
       this.baseService.setListTypeObjects(res['mime_docs']);
-      this.mixedObjects = !res['mime_docs'].reduce(function (a, b) { return (a === b) ? a : NaN; });
+      this.hasMixedObjects = !res['mime_docs'].reduce(function (a, b) { return (a === b) ? a : NaN; });
       this.typeObject = this.baseService.getListTypeObjects()[0]
       //Setting title info
       this.title = res['title'];
@@ -82,9 +80,10 @@ export class MultivioLayoutComponent implements OnInit {
   //Getting physical info from JSON
   setPhysical(docNumber: number){
     this.baseService.getPhysical().subscribe(data => {
+      this.baseService.setPhysicalInMemory(data);
       //Check if we are working with multiples documents/image at same time
       let nbDoc = Object.keys(data).length;
-      if (nbDoc > 1 && this.mixedObjects || this.typeObject == Type.PDF){
+      if (nbDoc > 1 && this.hasMixedObjects || this.typeObject == Type.PDF){
         this.baseService.setAsMultipleObjects(true);
         this.bottomMenuComponent.setNumberDocs(nbDoc);
         this.bottomMenuComponent.setCurrentDoc(docNumber);
@@ -99,7 +98,7 @@ export class MultivioLayoutComponent implements OnInit {
   //Dipspatch click on menu
   onMenuClick(e:Menu) {
     if(e != Menu.BottomMenuVisible && e != Menu.Download){
-      this.collapsedMenuComponent.collapse(e, this.typeObject, this.mixedObjects);
+      this.collapsedMenuComponent.collapse(e, this.typeObject, this.hasMixedObjects);
     }
     else{
       switch (e) {
@@ -173,7 +172,7 @@ export class MultivioLayoutComponent implements OnInit {
     //If we are working with multiples documents, set the new document
     if (this.baseService.getAsMultipleObjects() && this.documentChanged) {
       //Get image from document
-      if (this.typeObject == Type.PDF || this.mixedObjects){
+      if (this.typeObject == Type.PDF || this.hasMixedObjects){
         this.baseService.setUrlCurrentObject(this.baseService.getStructureObject()[this.currentDocument]['url']);  
       }
       //Loading news metadata of docuement
@@ -187,7 +186,7 @@ export class MultivioLayoutComponent implements OnInit {
     }
     else{
       //Setting the current object (mode image)
-      if (!this.mixedObjects && this.typeObject == Type.Image){
+      if (!this.hasMixedObjects && this.typeObject == Type.Image){
         this.baseService.setUrlCurrentObject(this.baseService.getStructureObject()[this.currentPage - 1]['url']); 
       }
       //Set info for mode search
@@ -212,7 +211,7 @@ export class MultivioLayoutComponent implements OnInit {
             this.currentPage = this.baseService.getMaxPage();
             this.bottomMenuComponent.currentPage = this.currentPage;
           }
-          if (this.documentChanged == true && this.collapsedMenuComponent.collapsed) {
+          if (this.documentChanged == true && this.collapsedMenuComponent.collapsed && this.collapsedMenuComponent.actualMenu == 2) {
             this.collapsedMenuComponent.getThumbsPreview();
           }
           //Set image
@@ -227,7 +226,7 @@ export class MultivioLayoutComponent implements OnInit {
       case Type.Image:
         //Get metadata from object of type image/jpeg
         this.imageService.getMetadataImage().subscribe(res => {
-          if(this.mixedObjects)
+          if(this.hasMixedObjects)
             this.baseService.setMaxPage(1);
           else
             this.baseService.setMaxPage(this.baseService.getStructureObject().length);
@@ -235,7 +234,7 @@ export class MultivioLayoutComponent implements OnInit {
           this.originalHeight = Math.round(res['nativeSize'][1]);
           this.originalWidth  = Math.round(res['nativeSize'][0]);
           this.ratioPage = this.originalHeight / this.originalWidth;
-          if (this.documentChanged == true && this.collapsedMenuComponent.collapsed) {
+          if (this.documentChanged == true && this.collapsedMenuComponent.collapsed && this.collapsedMenuComponent.actualMenu == 2) {
             this.collapsedMenuComponent.getThumbsPreview();
           } 
           //Set image
