@@ -6,10 +6,10 @@ import { BaseService } from './base.service';
 
 @Injectable()
 
-export class DocumentService{
+export class DocumentService {
 
-  constructor(protected http: HttpClient, protected urlPrefix: UrlPrefixService, private baseService: BaseService) { 
-    
+  constructor(protected http: HttpClient, protected urlPrefix: UrlPrefixService, private baseService: BaseService) {
+
   }
 
   /** GET toc from the document */
@@ -18,8 +18,8 @@ export class DocumentService{
   }
 
   /** GET find text from the document */
-  findText(text: string): Observable<Object[]>{
-    return this.http.get<Object[]>(this.urlPrefix.findTextDocument + this.baseService.getUrlCurrenObject() + '?string='+text);
+  findText(text: string): Observable<Object[]> {
+    return this.http.get<Object[]>(this.urlPrefix.findTextDocument + this.baseService.getUrlCurrenObject() + '?string=' + text);
   }
 
   /** GET metadata from the document */
@@ -28,21 +28,25 @@ export class DocumentService{
   }
 
   /** GET metadata from the document */
-  getImageFromDocument(nrPage: number, angle: number, maxWidth: number, minHeight:number): Observable<Blob> {
-    let query = "";
-    if(nrPage != null)
-      query += '?page_nr='+nrPage;
-    if(angle != 0)
-      query += '&angle='+angle;
-    if(maxWidth > 0)
-      query += '&max_width='+maxWidth;
-    if(minHeight > 0)
-      query += '&max_height='+minHeight;
+  getImageFromDocument(nrPage: number, angle: number, maxWidth: number, minHeight: number): Observable<Blob> {
+    let query = '';
+    if (nrPage !== null) {
+      query += '?page_nr=' + nrPage;
+    }
+    if (angle !== 0) {
+      query += '&angle=' + angle;
+    }
+    if (maxWidth > 0) {
+      query += '&max_width=' + maxWidth;
+    }
+    if (minHeight > 0) {
+      query += '&max_height=' + minHeight;
+    }
     return this.http.get(this.urlPrefix.imageDocument + this.baseService.getUrlCurrenObject() + query, {responseType: 'blob'});
   }
 
   /** Download the document */
-  downloadDocument(){
+  downloadDocument() {
     return this.http.get(this.urlPrefix.downloadDocument + this.baseService.getUrlCurrenObject() , {responseType: 'blob'});
   }
 

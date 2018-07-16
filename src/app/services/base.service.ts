@@ -9,13 +9,13 @@ import { Observable } from 'rxjs';
 
 export class BaseService {
 
-  protected asMultiplesObjects: boolean = false;
+  protected asMultiplesObjects = false;
   protected structureObject: any;
-  protected urlCurrentObject: string = '';
-  protected url: string = '';
-  protected maxPages: number = 0;
-  protected prefixMetadata: string = '';
-  protected prefixPhysical: string = '';
+  protected urlCurrentObject = '';
+  protected url = '';
+  protected maxPages = 0;
+  protected prefixMetadata = '';
+  protected prefixPhysical = '';
   protected listTypeObjects: any = [];
   protected physicalInMemory: Object;
 
@@ -44,11 +44,10 @@ export class BaseService {
   /** SET url of document  for the service */
   setUrl(url: string) {
     this.url = url;
-    if (this.url.endsWith(".json/")) {
+    if (this.url.endsWith('.json/')) {
       this.prefixMetadata = this.urlPrefix.metadataJSON;
-      this.prefixPhysical = this.urlPrefix.physicalJSON
-    }
-    else {
+      this.prefixPhysical = this.urlPrefix.physicalJSON;
+    } else {
       this.prefixMetadata = this.urlPrefix.metadataXML;
       this.prefixPhysical = this.urlPrefix.physicalXML;
     }
@@ -100,7 +99,7 @@ export class BaseService {
   }
 
   /** SET the physical into memory */
-  setPhysicalInMemory(data: Object){
+  setPhysicalInMemory(data: Object) {
     this.physicalInMemory = data;
   }
 

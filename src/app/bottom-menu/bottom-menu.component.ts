@@ -14,72 +14,68 @@ export class BottomMenuComponent implements OnInit {
   @Output() pageChanged = new EventEmitter();
 
   BottomMenu = BottomMenu;
-  isVisible: boolean = false;
-  currentPage: number = 1;
-  minValuePage: number = 1;
-  maxValuePage: number = 0;
-  currentAngle: number = 0;
+  isVisible = false;
+  currentPage = 1;
+  minValuePage = 1;
+  maxValuePage = 0;
+  currentAngle = 0;
   typeDisplay: number;
-  isDisabled: boolean = false;
-  nbrDocs: number = 0;
-  currentDoc: number = 0;
-  mode: string = "";
+  isDisabled = false;
+  nbrDocs = 0;
+  currentDoc = 0;
+  mode = '';
 
   constructor(private message: NzMessageService) {}
 
   ngOnInit() {}
 
-  //Toggle the visibility of collapsed menu
-  toggleVisibility(){
+  // Toggle the visibility of collapsed menu
+  toggleVisibility() {
     this.isVisible = !this.isVisible;
   }
 
-  //Dispatch on bottom menu click
-  onMenuClick(key: BottomMenu){
-    //Update image content on option clicked (emit to parent)
-    if(this.currentPage <= this.maxValuePage && this.currentPage >= this.minValuePage){
+  // Dispatch on bottom menu click
+  onMenuClick(key: BottomMenu) {
+    // Update image content on option clicked (emit to parent)
+    if (this.currentPage <= this.maxValuePage && this.currentPage >= this.minValuePage) {
       switch (key) {
         case BottomMenu.DecrementPage:
-          if (this.currentPage == this.minValuePage) {
-            if(this.currentDoc > 0){
+          if (this.currentPage === this.minValuePage) {
+            if (this.currentDoc > 0) {
               this.currentDoc--;
-              this.mode = "Back";
+              this.mode = 'Back';
             }
-          }
-          else if(this.currentPage > this.minValuePage){
+          } else if (this.currentPage > this.minValuePage) {
             this.currentPage--;
           }
           break;
         case BottomMenu.FirstPage:
-          if (this.currentPage == this.minValuePage) {
+          if (this.currentPage === this.minValuePage) {
             if (this.currentDoc > 0) {
               this.currentDoc--;
-              this.mode = "Back";
+              this.mode = 'Back';
             }
-          }
-          else {
+          } else {
             this.currentPage = this.minValuePage;
           }
           break;
         case BottomMenu.IncrementPage:
-          if (this.currentPage == this.maxValuePage) {
+          if (this.currentPage === this.maxValuePage) {
             if (this.currentDoc < this.nbrDocs) {
               this.currentDoc++;
               this.currentPage = 1;
             }
-          }
-          else if(this.currentPage < this.maxValuePage){
+          } else if (this.currentPage < this.maxValuePage) {
             this.currentPage++;
           }
           break;
         case BottomMenu.LastPage:
-          if (this.currentPage == this.maxValuePage) {
+          if (this.currentPage === this.maxValuePage) {
             if (this.currentDoc < this.nbrDocs) {
               this.currentDoc++;
               this.currentPage = 1;
             }
-          }
-          else{
+          } else {
             this.currentPage = this.maxValuePage;
           }
           break;
@@ -94,54 +90,53 @@ export class BottomMenuComponent implements OnInit {
           break;
         case BottomMenu.ZoomIn:
           this.typeDisplay = Display.ZoomIn;
-          break; 
+          break;
         case BottomMenu.FitToHeight:
           this.typeDisplay = Display.FitToHeight;
-          break;   
+          break;
         case BottomMenu.FitToWidth:
           this.typeDisplay = Display.FitToWidth;
-          break;   
+          break;
         case BottomMenu.OriginalSize:
           this.typeDisplay = Display.OriginalSize;
-          break;    
+          break;
       }
-      //Emit message to parent
-      this.pageChanged.emit({"Page":this.currentPage,"Angle": this.currentAngle,"Display": this.typeDisplay, "Doc": this.currentDoc, "Mode": this.mode});
-      this.typeDisplay=-1
-      this.mode = ""
-    }
-    else{
-      //Display message error
-      this.message.create('warning', `Vous avez insérez un nombre qui n'est pas compri entre : ${this.minValuePage} et ${this.maxValuePage} `);
+      // Emit message to parent
+      this.pageChanged.emit({'Page': this.currentPage, 'Angle': this.currentAngle, 'Display': this.typeDisplay,
+       'Doc': this.currentDoc, 'Mode': this.mode});
+      this.typeDisplay = -1;
+      this.mode = '';
+    } else {
+      // Display message error
+      this.message.create('warning', `Vous avez insérez un nombre qui n'est pas compri entre :
+       ${this.minValuePage} et ${this.maxValuePage} `);
     }
   }
 
-  //Get page from input 
-  getPage(nrPage: number){
-    if(nrPage <= this.maxValuePage && nrPage >= this.minValuePage){
+  // Get page from input
+  getPage(nrPage: number) {
+    if (nrPage <= this.maxValuePage && nrPage >= this.minValuePage) {
       this.currentPage = nrPage;
-    }
-    else if(nrPage < this.minValuePage){
-      //Display message error
+      // Emmit message to parent
+      this.pageChanged.emit({ 'Page': this.currentPage, 'Angle': this.currentAngle, 'Display': this.typeDisplay });
+    } else if (nrPage < this.minValuePage) {
+      // Display message error
       this.message.create('warning', `Vous avez insérez un nombre inférieur au minimum consenti ( ${this.minValuePage} )`);
       this.currentPage = this.minValuePage;
-    }
-    else{
-      //Displax message error
+    } else {
+      // Displax message error
       this.message.create('warning', `Vous avez insérez un nombre supérieur au maximum consenti ( ${this.maxValuePage} )`);
       this.currentPage = this.maxValuePage;
-    }
-    //Emmit message to parent
-    this.pageChanged.emit({"Page":this.currentPage,"Angle": this.currentAngle,"Display": this.typeDisplay});
+    }  
   }
 
-  //Set numbers of documents in the app
-  setNumberDocs(nbr: number){
+  // Set numbers of documents in the app
+  setNumberDocs(nbr: number) {
     this.nbrDocs = nbr - 1;
   }
 
-  //Set actual document in app
-  setCurrentDoc(nbr: number){
+  // Set actual document in app
+  setCurrentDoc(nbr: number) {
     this.currentDoc = nbr;
   }
 }

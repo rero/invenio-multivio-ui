@@ -8,7 +8,7 @@ import { BaseService } from '../services/base.service';
 import { Menu } from '../enum/menu.enum';
 import { Display } from '../enum/display.enum';
 import { Type } from '../enum/type.enum';
-import { ResizedEvent } from 'angular-resize-event/resized-event';  
+import { ResizedEvent } from 'angular-resize-event/resized-event';
 
 
 @Component({
@@ -30,77 +30,76 @@ export class MultivioLayoutComponent implements OnInit {
 
   Menu = Menu;
   Type = Type;
-  isCollapsed: boolean = false;
-  isReverseArrow: boolean = false;
-  width: number  = 200;
-  title: string = "";
-  creator: string = "";
-  contentHeight: number = 0; 
-  contentWidth: number = 0;
-  maxHeight: number = 0; 
-  maxWidth: number = 0;
-  originalHeight: number = 0;
-  originalWidth: number = 0;
-  currentPage: number= 1;
-  anglePage: number = 0;
-  firstRendering: boolean = false;
-  typeObject: string = "";
-  hasMixedObjects: boolean = false;
-  isLoading: boolean = true;
-  currentDocument: number = 0;
-  ratioPage: number = 0;
-  documentChanged: boolean = false;
-  modeBack: boolean = false;
+  isCollapsed = false;
+  isReverseArrow = false;
+  width  = 200;
+  title = '';
+  creator = '';
+  contentHeight = 0;
+  contentWidth = 0;
+  maxHeight = 0;
+  maxWidth = 0;
+  originalHeight = 0;
+  originalWidth = 0;
+  currentPage = 1;
+  anglePage = 0;
+  firstRendering = false;
+  typeObject = '';
+  hasMixedObjects = false;
+  isLoading = true;
+  currentDocument = 0;
+  ratioPage = 0;
+  documentChanged = false;
+  modeBack = false;
 
   constructor(private documentService: DocumentService, private imageService: ImageService, private baseService: BaseService) { }
 
   ngOnInit() {
-    //Setting url metadata (JSON or XML )
+    // Setting url metadata (JSON or XML )
     this.baseService.setUrl(this.url);
-    //Get metadata Json 
+    // Get metadata Json
     this.setMetada();
   }
 
-  //Getting info from JSON
-  setMetada(){
+  // Getting info from JSON
+  setMetada() {
     this.baseService.getMetadata().subscribe(res => {
-      //Set type of object
+      // Set type of object
       this.baseService.setListTypeObjects(res['mime_docs']);
       this.hasMixedObjects = !res['mime_docs'].reduce(function (a, b) { return (a === b) ? a : NaN; });
-      this.typeObject = this.baseService.getListTypeObjects()[0]
-      //Setting title info
+      this.typeObject = this.baseService.getListTypeObjects()[0];
+      // Setting title info
       this.title = res['title'];
-      //Setting creator info
+      // Setting creator info
       this.creator = res['creator'][0];
       this.setPhysical(0);
       }
-    ); 
+    );
   }
 
-  //Getting physical info from JSON
-  setPhysical(docNumber: number){
+  // Getting physical info from JSON
+  setPhysical(docNumber: number) {
     this.baseService.getPhysical().subscribe(data => {
       this.baseService.setPhysicalInMemory(data);
-      //Check if we are working with multiples documents/image at same time
-      let nbDoc = Object.keys(data).length;
-      if (nbDoc > 1 && this.hasMixedObjects || this.typeObject == Type.PDF){
+      // Check if we are working with multiples documents/image at same time
+      const nbDoc = Object.keys(data).length;
+      if (nbDoc > 1 && this.hasMixedObjects || this.typeObject === Type.PDF) {
         this.baseService.setAsMultipleObjects(true);
         this.bottomMenuComponent.setNumberDocs(nbDoc);
         this.bottomMenuComponent.setCurrentDoc(docNumber);
       }
-      //By default we set the first document/image
+      // By default we set the first document/image
       this.baseService.setStructureObject(data);
       this.baseService.setUrlCurrentObject(data[docNumber]['url']);
       this.loadMetadata();
     });
   }
 
-  //Dipspatch click on menu
-  onMenuClick(e:Menu) {
-    if(e != Menu.BottomMenuVisible && e != Menu.Download){
+  // Dipspatch click on menu
+  onMenuClick(e: Menu) {
+    if (e !== Menu.BottomMenuVisible && e !== Menu.Download) {
       this.collapsedMenuComponent.collapse(e, this.typeObject, this.hasMixedObjects);
-    }
-    else{
+    } else {
       switch (e) {
         case Menu.BottomMenuVisible:
           this.toggleBottomMenu();
@@ -112,152 +111,152 @@ export class MultivioLayoutComponent implements OnInit {
     }
   }
 
-  //Toggle the visibility of the bottom menu
-  toggleBottomMenu(){
-    this.bottomMenuComponent.toggleVisibility()
+  // Toggle the visibility of the bottom menu
+  toggleBottomMenu() {
+    this.bottomMenuComponent.toggleVisibility();
   }
 
-  //Update image for rendering
-  updateImage(event: Object){
-    //Resetting bboxes
+  // Update image for rendering
+  updateImage(event: Object) {
+    // Resetting bboxes
     this.contentComponent.resetBbox();
-    //Start spinner loading
+    // Start spinner loading
     this.setSpinnerLoading(true);
-    //Set actual doc in application
-    if(event["Doc"] != null){
-      if (event["Doc"] != this.currentDocument){
-        //If we have changed the we reitialize the thumlist preview
+    // Set actual doc in application
+    if (event['Doc'] !== null) {
+      if (event['Doc'] !== this.currentDocument) {
+        // If we have changed the we reitialize the thumlist preview
         this.collapsedMenuComponent.resetThumbList();
-        this.currentDocument = event["Doc"];
+        this.currentDocument = event['Doc'];
         this.documentChanged = true;
         this.collapsedMenuComponent.clearResults();
-        this.bottomMenuComponent.setCurrentDoc(event["Doc"]);
-        this.typeObject = this.baseService.getListTypeObjects()[event["Doc"]];
+        this.bottomMenuComponent.setCurrentDoc(event['Doc']);
+        this.typeObject = this.baseService.getListTypeObjects()[event['Doc']];
         this.collapsedMenuComponent.typeObject = this.typeObject;
       }
     }
-    //Setting the angle
-    this.anglePage = event["Angle"];
-    //Manage event display
-    switch (event["Display"]) {
+    // Setting the angle
+    this.anglePage = event['Angle'];
+    // Manage event display
+    switch (event['Display']) {
       case Display.ZoomIn:
-        //By default zoom-in is set to + 20%
+        // By default zoom-in is set to + 20%
         this.contentWidth = Math.round(this.contentWidth + this.contentWidth / 100 * 20);
         this.contentHeight = Math.round(this.contentHeight + this.contentHeight / 100 * 20);
         break;
       case Display.ZoomOut:
-        //By default zoom-ou is set to - 20%
+        // By default zoom-ou is set to - 20%
         this.contentWidth = Math.round(this.contentWidth - this.contentWidth / 100 * 20);
         this.contentHeight = Math.round(this.contentHeight - this.contentHeight / 100 * 20);
         break;
       case Display.FitToWidth:
         this.contentWidth = this.maxWidth;
-        //Calculating height with ratio
-        this.contentHeight = Math.round(this.maxWidth * this.ratioPage);        
+        // Calculating height with ratio
+        this.contentHeight = Math.round(this.maxWidth * this.ratioPage);
         break;
       case Display.FitToHeight:
         this.contentHeight = this.maxHeight;
-        //Calculating with with ratio
+        // Calculating with with ratio
         this.contentWidth = Math.round(this.maxHeight / this.ratioPage);
         break;
       case Display.OriginalSize:
-        //Set content to original sizes
+        // Set content to original sizes
         this.contentWidth = this.originalWidth;
         this.contentHeight = this.originalHeight;
         break;
     }
-    //Update info about current page
-    this.bottomMenuComponent.currentPage = event["Page"];
-    this.currentPage = event["Page"];
-    //If we are working with multiples documents, set the new document
+    // Update info about current page
+    this.bottomMenuComponent.currentPage = event['Page'];
+    this.currentPage = event['Page'];
+    // If we are working with multiples documents, set the new document
     if (this.baseService.getAsMultipleObjects() && this.documentChanged) {
-      //Get image from document
-      if (this.typeObject == Type.PDF || this.hasMixedObjects){
-        this.baseService.setUrlCurrentObject(this.baseService.getStructureObject()[this.currentDocument]['url']);  
+      // Get image from document
+      if (this.typeObject === Type.PDF || this.hasMixedObjects) {
+        this.baseService.setUrlCurrentObject(this.baseService.getStructureObject()[this.currentDocument]['url']);
       }
-      //Loading news metadata of docuement
-      if (event["Mode"] == "Back") {
-        //Retrive info from children's
+      // Loading news metadata of docuement
+      if (event['Mode'] === 'Back') {
+        // Retrive info from children's
         this.modeBack = true;
-        this.bottomMenuComponent.currentPage = event["Page"];
-        this.currentPage = event["Page"];
+        this.bottomMenuComponent.currentPage = event['Page'];
+        this.currentPage = event['Page'];
       }
       this.loadMetadata();
-    }
-    else{
-      //Setting the current object (mode image)
-      if (!this.hasMixedObjects && this.typeObject == Type.Image){
-        this.baseService.setUrlCurrentObject(this.baseService.getStructureObject()[this.currentPage - 1]['url']); 
+    } else {
+      // Setting the current object (mode image)
+      if (!this.hasMixedObjects && this.typeObject === Type.Image) {
+        this.baseService.setUrlCurrentObject(this.baseService.getStructureObject()[this.currentPage - 1]['url']);
       }
-      //Set info for mode search
+      // Set info for mode search
       this.contentComponent.setInfoPage(this.contentHeight / this.originalHeight, this.currentPage, this.anglePage);
-      //Set image
+      // Set image
       this.setImageContent();
     }
   }
 
-  //Load info abaout the document (ex. ssizes, number pages, ..)
-  loadMetadata(){
+  // Load info abaout the document (ex. ssizes, number pages, ..)
+  loadMetadata() {
     switch (this.typeObject) {
       case Type.PDF:
-        //Get metadata from object of type PDF
+        // Get metadata from object of type PDF
         this.documentService.getMetadataDocument().subscribe(res => {
           this.baseService.setMaxPage(res['nPages']);
           this.bottomMenuComponent.maxValuePage = this.baseService.getMaxPage();
           this.originalHeight = Math.round(res['nativeSize'][0][1]);
-          this.originalWidth  = Math.round(res['nativeSize'][0][0]); 
-          this.ratioPage = this.originalHeight / this.originalWidth;   
+          this.originalWidth  = Math.round(res['nativeSize'][0][0]);
+          this.ratioPage = this.originalHeight / this.originalWidth;
           if (this.modeBack) {
             this.currentPage = this.baseService.getMaxPage();
             this.bottomMenuComponent.currentPage = this.currentPage;
           }
-          if (this.documentChanged == true && this.collapsedMenuComponent.collapsed && this.collapsedMenuComponent.actualMenu == 2) {
+          if (this.documentChanged === true && this.collapsedMenuComponent.collapsed && this.collapsedMenuComponent.actualMenu === 2) {
             this.collapsedMenuComponent.getThumbsPreview();
           }
-          //Set image
+          // Set image
           this.setImageContent();
-          //Set info for mode search
+          // Set info for mode search
           this.contentComponent.setInfoPage(this.contentHeight / this.originalHeight, this.currentPage, this.anglePage);
-          this.documentChanged = false; 
+          this.documentChanged = false;
           this.modeBack = false;
         }
       );
         break;
       case Type.Image:
-        //Get metadata from object of type image/jpeg
+        // Get metadata from object of type image/jpeg
         this.imageService.getMetadataImage().subscribe(res => {
-          if(this.hasMixedObjects)
+          if (this.hasMixedObjects) {
             this.baseService.setMaxPage(1);
-          else
+          } else {
             this.baseService.setMaxPage(this.baseService.getStructureObject().length);
+          }
           this.bottomMenuComponent.maxValuePage = this.baseService.getMaxPage();
           this.originalHeight = Math.round(res['nativeSize'][1]);
           this.originalWidth  = Math.round(res['nativeSize'][0]);
           this.ratioPage = this.originalHeight / this.originalWidth;
-          if (this.documentChanged == true && this.collapsedMenuComponent.collapsed && this.collapsedMenuComponent.actualMenu == 2) {
+          if (this.documentChanged === true && this.collapsedMenuComponent.collapsed && this.collapsedMenuComponent.actualMenu === 2) {
             this.collapsedMenuComponent.getThumbsPreview();
-          } 
-          //Set image
+          }
+          // Set image
           this.setImageContent();
-          //Set info for mode search
+          // Set info for mode search
           this.contentComponent.setInfoPage(this.contentHeight / this.originalHeight, this.currentPage, this.anglePage);
-          this.documentChanged = false; 
+          this.documentChanged = false;
         });
         break;
-    } 
+    }
   }
 
-  //Fontion to download 
-  download(){
-    switch (this.typeObject){
+  // Fontion to download
+  download() {
+    switch (this.typeObject) {
       case Type.PDF:
-        //Download PDF
+        // Download PDF
         this.documentService.downloadDocument().subscribe(data => {
           this.createObjectURL(data);
         });
         break;
       case Type.Image:
-        //Download the image
+        // Download the image
         this.imageService.downloadImage().subscribe(data => {
           this.createObjectURL(data);
         });
@@ -265,10 +264,10 @@ export class MultivioLayoutComponent implements OnInit {
     }
   }
 
-  //Create URL for downloading the element
-  createObjectURL(data: Blob){
-    var url = window.URL.createObjectURL(data);    
-    var a = document.createElement('a');
+  // Create URL for downloading the element
+  createObjectURL(data: Blob) {
+    const url = window.URL.createObjectURL(data);
+    const a = document.createElement('a');
     document.body.appendChild(a);
     a.setAttribute('style', 'display: none');
     a.href = url;
@@ -278,23 +277,24 @@ export class MultivioLayoutComponent implements OnInit {
     a.remove();
   }
 
-  //On resized event , called after resize content
-  onResized(event: ResizedEvent): void {  //TODO resize?  call getPage? Attention of kind of object
-    if( event.newWidth > 0 &&  event.newHeight > 0 && !this.firstRendering){
+  // On resized event , called after resize content
+  onResized(event: ResizedEvent): void {  // TODO resize?  call getPage? Attention of kind of object
+    if ( event.newWidth > 0 &&  event.newHeight > 0 && !this.firstRendering) {
       this.contentWidth = event.newWidth - 100;
       this.contentHeight = event.newHeight - 235;
       this.firstRendering = true;
-      //this.setImageContent();
+      // this.setImageContent();
     }
     this.maxWidth = event.newWidth - 100;
     this.maxHeight = event.newHeight - 235;
   }
 
-  //Set image to render
-  setImageContent(){
+  // Set image to render
+  setImageContent() {
     switch (this.typeObject) {
       case Type.PDF:
-        this.documentService.getImageFromDocument(this.currentPage, this.anglePage, this.contentWidth, this.contentHeight).subscribe(data => {
+        this.documentService.getImageFromDocument(this.currentPage, this.anglePage, this.contentWidth, this.contentHeight)
+        .subscribe(data => {
           this.createImageFromBlob(data);
           this.setSpinnerLoading(false);
         });
@@ -303,30 +303,30 @@ export class MultivioLayoutComponent implements OnInit {
         this.imageService.getImage(this.anglePage, this.contentWidth, this.contentHeight).subscribe(data => {
           this.createImageFromBlob(data);
           this.setSpinnerLoading(false);
-        });        
+        });
       break;
     }
   }
 
-  //Create image from blob retrieved (server)
+  // Create image from blob retrieved (server)
   createImageFromBlob(image: Blob) {
-    let reader = new FileReader();
-    reader.addEventListener("load", () => {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => {
         this.contentComponent.setImage(reader.result);
     }, false );
-    if(image) {
+    if (image) {
        reader.readAsDataURL(image);
     }
   }
 
-  //Displaing box on document
-  displayBoxSearch(res: any){
+  // Displaing box on document
+  displayBoxSearch(res: any) {
     this.contentComponent.setBBox(res);
     this.contentComponent.setInfoPage(this.contentHeight / this.originalHeight, this.currentPage, this.anglePage);
   }
 
-  //Stop spinner loading
-  setSpinnerLoading(loading: boolean){
+  // Stop spinner loading
+  setSpinnerLoading(loading: boolean) {
     this.isLoading = loading;
   }
 }

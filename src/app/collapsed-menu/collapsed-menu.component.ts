@@ -1,5 +1,5 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { trigger,state,style,transition,animate } from '@angular/animations';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 import { NzTreeNode } from 'ng-zorro-antd';
 import { DocumentService } from '../services/document.service';
 import { ImageService } from '../services/image.service';
@@ -30,132 +30,133 @@ export class CollapsedMenuComponent implements OnInit {
   @Output() searchItemClick = new EventEmitter();
 
   Menu = Menu;
-  inputValue: string = "";
-  collapsed: boolean = false ;
+  inputValue = '';
+  collapsed = false ;
   nodesTOC: Array<Object> = [];
-  counter: number = 0;
-  actualMenu: number = 99;
-  infoTocRetrieved: boolean = false;
-  thumbnailsRetrieved: boolean = false;
+  counter = 0;
+  actualMenu = 99;
+  infoTocRetrieved = false;
+  thumbnailsRetrieved = false;
   resultsSearch: any[] = [];
   thumbList: any[] = [];
-  sizeResultsSearch: number = 0;
-  thumbListMaxIndex: number = 8;
-  modeViewThumb: string = 'list'
+  sizeResultsSearch = 0;
+  thumbListMaxIndex = 8;
+  modeViewThumb = 'list';
   typeObject: string ;
-  searchDone: boolean = false;
-  liClicked: number = -1;
-  urlActualDoc: string = "";
-  sizeTOC: number = 0;
-  nbrDocs: number = 0;
-  hasMixedObjects: boolean = false;
+  searchDone = false;
+  liClicked = -1;
+  urlActualDoc = '';
+  sizeTOC = 0;
+  nbrDocs = 0;
+  hasMixedObjects = false;
 
   constructor(private documentService: DocumentService, private imageService: ImageService, private baseService: BaseService) { }
 
-  ngOnInit(){ }
+  ngOnInit() { }
 
-  //Display or hide the menu
+  // Display or hide the menu
   collapse(e: Menu, type: string, mixed: boolean) {
     this.hasMixedObjects = mixed;
     this.typeObject = type;
-    //Dipatch the action on click
-    this.dispatchMenu(e)
-    if(this.actualMenu == 99)
+    // Dipatch the action on click
+    this.dispatchMenu(e);
+    if (this.actualMenu === 99) {
       this.actualMenu = e;
-    //Diplay, hide collapsed menu
-    if(this.actualMenu == e || !this.collapsed && this.actualMenu != e){
+    }
+    // Diplay, hide collapsed menu
+    if (this.actualMenu === e || !this.collapsed && this.actualMenu !== e) {
       this.collapsed = !this.collapsed;
     }
     this.actualMenu = e;
   }
 
-  //Display the page from TOC
+  // Display the page from TOC
   onClickTree(e: any): void {
-    this.getPage(e.node.origin.page, e.node.origin.doc);
+    this.getPage(Number(e.node.origin.page), Number(e.node.origin.doc));
   }
 
-  //Check if node as children's (recursive) to construct the tree
-  asChildren (val: Object, node: Object){
-    if(val.hasOwnProperty('childs'))
-    { 
-      let childs = val['childs']
+  // Check if node as children's (recursive) to construct the tree
+  asChildren (val: Object, node: Object, index: number) {
+    if (val.hasOwnProperty('childs')) {
+      const childs = val['childs'];
       for (let i = 0; i < childs.length; i++) {
-        let subNode = {
+        const subNode = {
           title : childs[i]['label'],
           key : (this.counter++).toString(),
+          doc: index,
           page : childs[i]['page_number']
+        };
+        if (!node.hasOwnProperty('children')) {
+          node['children'] = [];
         }
-        if(!node.hasOwnProperty('children'))
-          node['children'] = []
         node['children'].push(subNode);
-        this.asChildren( childs[i],subNode);
+        this.asChildren( childs[i], subNode, index);
       }
     }
   }
 
-  //Dipatch click menu to correct fonctionality
-  dispatchMenu(option: number):void {
+  // Dipatch click menu to correct fonctionality
+  dispatchMenu(option: number): void {
     switch (option) {
       case Menu.TOC:
         this.getTOC();
         break;
-      case Menu.ThumbPreview: 
+      case Menu.ThumbPreview:
         this.getThumbsPreview();
         break;
     }
   }
 
-  //Retrieve the table of contents of documents if exists
-  getTOC(){
-    if(!this.infoTocRetrieved){
-      
-      var res;
-
-      this.nbrDocs = Object.keys(this.baseService.getPhysicalInMemory()).length
+  // Retrieve the table of contents of documents if exists
+  getTOC() {
+    if (!this.infoTocRetrieved) {
+      let res;
+      this.nbrDocs = Object.keys(this.baseService.getPhysicalInMemory()).length;
       for (let i = 0; i < this.nbrDocs; i++) {
-        this.typeObject = this.baseService.getListTypeObjects()[i]
-        res = this.baseService.getPhysicalInMemory()[i] 
+        this.typeObject = this.baseService.getListTypeObjects()[i];
+        res = this.baseService.getPhysicalInMemory()[i];
         switch (this.typeObject) {
-          //We have 2 modes PDF or Image
+          // We have 2 modes PDF or Image
           case Type.PDF:
-            //Retrieve TOC from PDF 
+            // Retrieve TOC from PDF
             this.urlActualDoc = this.baseService.getUrlCurrenObject();
             this.parseTocPDF(res, i);
-            //Restore information about actual docment
+            // Restore information about actual docment
             this.baseService.setUrlCurrentObject(this.urlActualDoc);
             this.infoTocRetrieved = true;
             break;
           case Type.Image:
-            let node = {
+            const node = {
               title: res['label'],
               key: (this.counter++).toString(),
+              doc: i,
               page: i + 1
-            }
+            };
             this.nodesTOC[i] = new NzTreeNode(node);
             this.sizeTOC = Object.keys(this.nodesTOC).length;
-            
+
             this.infoTocRetrieved = true;
             break;
         }
       }
-    } 
+    }
   }
 
-  //Get the thumbslist, 8 at first loading or less if document as not 8 elements
-  getThumbsPreview(){
-    if (!this.thumbnailsRetrieved){
-      if (this.thumbListMaxIndex > this.baseService.getMaxPage()){
-        this.thumbListMaxIndex = this.baseService.getMaxPage()
+  // Get the thumbslist, 8 at first loading or less if document as not 8 elements
+  getThumbsPreview() {
+    if (!this.thumbnailsRetrieved) {
+      if (this.thumbListMaxIndex > this.baseService.getMaxPage()) {
+        this.thumbListMaxIndex = this.baseService.getMaxPage();
       }
-      for (let page = 1; page <= this.thumbListMaxIndex; page++) { 
+      for (let page = 1; page <= this.thumbListMaxIndex; page++) {
         this.getThumbImages(page);
-      } 
+      }
       this.thumbnailsRetrieved = true;
     }
   }
 
-  //Search text in document (only for PDF)
-  getInputSearch(input:string) {
+  // Search text in document (only for PDF)
+  getInputSearch(input: string) {
     this.documentService.findText(input)
     .subscribe(res => {
       this.searchDone = true;
@@ -163,76 +164,76 @@ export class CollapsedMenuComponent implements OnInit {
       this.resultsSearch = res;
       if (this.sizeResultsSearch > 0) {
         for (let i = 0; i < res.length; i++) {
-          let startString = this.resultsSearch[i]["text"];
-          //Put word in bold 
-          var reg = new RegExp(input, "i");
-          let endString = startString.slice(0, startString.search(reg)) +  
-            '<b>' + 
-            startString.slice(startString.search(reg), startString.search(reg) + input.length) + 
-            '</b>'+
+          const startString = this.resultsSearch[i]['text'];
+          // Put word in bold
+          const reg = new RegExp(input, 'i');
+          const endString = startString.slice(0, startString.search(reg)) +
+            '<b>' +
+            startString.slice(startString.search(reg), startString.search(reg) + input.length) +
+            '</b>' +
             startString.slice(startString.search(reg) + input.length);
-          this.resultsSearch[i]["text"] = endString;
-          //Adding for tooltip
-          this.resultsSearch[i]["toolTip"] = startString;
+          this.resultsSearch[i]['text'] = endString;
+          // Adding for tooltip
+          this.resultsSearch[i]['toolTip'] = startString;
         }
-      }
-      else{
-        //Send BBox info at parent (in this case no results fournd)
-        this.searchItemClick.emit({ "BBox": this.resultsSearch });
+      } else {
+        // Send BBox info at parent (in this case no results fournd)
+        this.searchItemClick.emit({ 'BBox': this.resultsSearch });
       }
     });
   }
 
-  //Clearing results to put all by default
-  clearResults(){ 
+  // Clearing results to put all by default
+  clearResults() {
     this.resultsSearch = [];
     this.inputValue = null;
     this.searchDone = false;
     this.liClicked = -1;
-    this.searchItemClick.emit({ "BBox": this.resultsSearch });
+    this.searchItemClick.emit({ 'BBox': this.resultsSearch });
   }
 
-  //Emit message to parent about the page
-  getPage(nrPage: number, doc: number){    
-    this.pageChanged.emit({"Page":nrPage, "Angle": 0, "Doc":doc});
+  // Emit message to parent about the page
+  getPage(nrPage: number, doc: number) {
+    this.pageChanged.emit({'Page': nrPage, 'Angle': 0, 'Doc': doc});
   }
 
-  //Click on list result of search
-  resultClick(result: any, liNumberClick: number){ 
+  // Click on list result of search
+  resultClick(result: any, liNumberClick: number) {
     this.liClicked = liNumberClick;
-    //Send info about search to display
+    // Send info about search to display
     this.resultsSearch.forEach(element => {
-      //Setting element selected as true for highlight in content component
-      if (element.text == result.text)
+      // Setting element selected as true for highlight in content component
+      if (element.text === result.text) {
         element['selected'] = true;
-      else
+      } else {
         element['selected'] = false;
+      }
     });
-    //Dislay the page 
+    // Dislay the page
     this.getPage(result.page, null);
-    //Send info about the bbox
-    this.searchItemClick.emit({ "BBox": this.resultsSearch});
+    // Send info about the bbox
+    this.searchItemClick.emit({ 'BBox': this.resultsSearch});
   }
 
-  //When last thumb is displayed call to the next thumbs from server
-  onIntersection(event : any) {
-    if(event.target.id == this.thumbListMaxIndex 
-        && event.visible == true 
-      && this.thumbListMaxIndex < this.baseService.getMaxPage()){
+  // When last thumb is displayed call to the next thumbs from server
+  onIntersection(event: any) {
+    if (Number(event.target.id) === this.thumbListMaxIndex
+        && Boolean(event.visible) === true
+      && this.thumbListMaxIndex < this.baseService.getMaxPage()) {
       this.thumbListMaxIndex++;
       this.getThumbImages(this.thumbListMaxIndex);
     }
   }
 
-  //Retrieve the thumbs images
-  getThumbImages(page: number){
-    switch (this.typeObject){
-      //Mode PDF
+  // Retrieve the thumbs images
+  getThumbImages(page: number) {
+    switch (this.typeObject) {
+      // Mode PDF
       case Type.PDF:
-        this.documentService.getImageFromDocument(page,0,150,150)
+        this.documentService.getImageFromDocument(page, 0, 150, 150)
           .subscribe(thumb => {
-            let reader = new FileReader();
-            reader.addEventListener("load", () => {
+            const reader = new FileReader();
+            reader.addEventListener('load', () => {
               this.thumbList[page - 1] = reader.result;
               }, false
             );
@@ -241,19 +242,19 @@ export class CollapsedMenuComponent implements OnInit {
             }
         });
         break;
-      //Mode Image
+      // Mode Image
       case Type.Image:
-        if(this.hasMixedObjects)
+        if (this.hasMixedObjects) {
           this.baseService.setUrlCurrentObject(this.baseService.getUrlCurrenObject());
-        else{
-          let structure = this.baseService.getStructureObject();
-          this.baseService.setUrlCurrentObject(structure[page-1]['url']);
-        }  
-        this.imageService.getImage(0,150,150)  
+        } else {
+          const structure = this.baseService.getStructureObject();
+          this.baseService.setUrlCurrentObject(structure[page - 1]['url']);
+        }
+        this.imageService.getImage(0, 150, 150)
           .subscribe(thumb => {
-            let reader = new FileReader();
-            reader.addEventListener("load", () => {
-                this.thumbList[page-1] = reader.result;
+            const reader = new FileReader();
+            reader.addEventListener('load', () => {
+                this.thumbList[page - 1] = reader.result;
               }, false
             );
             if (thumb) {
@@ -264,54 +265,53 @@ export class CollapsedMenuComponent implements OnInit {
     }
   }
 
-  //On Thumb selected display the correct page
-  thumbSelected(page: number){
-    this.getPage(page, null); 
+  // On Thumb selected display the correct page
+  thumbSelected(page: number) {
+    this.getPage(page, null);
   }
 
-  //Mode display of thumb's (list or grid)
-  modeView(mode: string){
+  // Mode display of thumb's (list or grid)
+  modeView(mode: string) {
     this.modeViewThumb = mode;
   }
 
-  //Reset thumb list
-  resetThumbList(){
+  // Reset thumb list
+  resetThumbList() {
     this.thumbnailsRetrieved = false;
     this.thumbList = [];
   }
 
-  parseTocPDF(res: Object, i: number){
+  parseTocPDF(res: Object, i: number) {
     this.baseService.setUrlCurrentObject(this.baseService.getStructureObject()[i]['url']);
     this.documentService.getTOC().subscribe(data => {
-      if (data != null) {
-        let node = {
+      if (data !== null) {
+        const node = {
           title: res['label'],
           key: (this.counter++).toString(),
           page: 1,
           doc: i,
           children: []
-        }
+        };
         for (let j = 0; j < data.length; j++) {
-          let subNode = {
+          const subNode = {
             title: data[j]['label'],
             key: (this.counter++).toString(),
             doc: i,
             page: data[j]['file_position']['index']
-          }
-          this.asChildren(data[j], subNode);
+          };
+          this.asChildren(data[j], subNode, i);
           node['children'].push(subNode);
         }
         this.nodesTOC[i] = new NzTreeNode(node);
         this.sizeTOC = Object.keys(this.nodesTOC).length;
-      }
-      else {
-        let node = {
+      } else {
+        const node = {
           title: res['label'],
           key: (this.counter++).toString(),
           doc: i,
           page: 1,
           children: []
-        }
+        };
         this.nodesTOC[i] = new NzTreeNode(node);
         this.sizeTOC = Object.keys(this.nodesTOC).length;
       }
