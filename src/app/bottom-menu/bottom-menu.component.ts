@@ -118,7 +118,7 @@ export class BottomMenuComponent implements OnInit {
     if (nrPage <= this.maxValuePage && nrPage >= this.minValuePage) {
       this.currentPage = nrPage;
       // Emmit message to parent
-      this.pageChanged.emit({ 'Page': this.currentPage, 'Angle': this.currentAngle, 'Display': this.typeDisplay });
+      this.pageChanged.emit({ 'Page': this.currentPage, 'Angle': this.currentAngle, 'Display': this.typeDisplay , 'Doc': null });
     } else if (nrPage < this.minValuePage) {
       // Display message error
       this.message.create('warning', `Vous avez insérez un nombre inférieur au minimum consenti ( ${this.minValuePage} )`);
