@@ -6,7 +6,6 @@ import { ImageService } from '../services/image.service';
 import { BaseService } from '../services/base.service';
 import { Menu } from '../enum/menu.enum';
 import { Type } from '../enum/type.enum';
-import { NgZorroAntdModule, NZ_I18N, fr_FR } from 'ng-zorro-antd';
 
 @Component({
   selector: 'app-collapsed-menu',
@@ -50,6 +49,7 @@ export class CollapsedMenuComponent implements OnInit {
   sizeTOC = 0;
   nbrDocs = 0;
   hasMixedObjects = false;
+  keyExpanded = '0';
 
   constructor(private documentService: DocumentService, private imageService: ImageService, private baseService: BaseService) { }
 
@@ -130,6 +130,8 @@ export class CollapsedMenuComponent implements OnInit {
             this.infoTocRetrieved = true;
             break;
           case Type.Image:
+            if( i == 0 )
+              this.keyExpanded = (this.counter).toString();
             const node = {
               title: res['label'],
               key: (this.counter++).toString(),
@@ -222,7 +224,7 @@ export class CollapsedMenuComponent implements OnInit {
   onIntersection(event: any) {
     if (Number(event.target.id) === this.thumbListMaxIndex
         && Boolean(event.visible) === true
-      && this.thumbListMaxIndex < this.baseService.getMaxPage()) {
+        && this.thumbListMaxIndex < this.baseService.getMaxPage()) {
       this.thumbListMaxIndex++;
       this.getThumbImages(this.thumbListMaxIndex);
     }
@@ -287,6 +289,8 @@ export class CollapsedMenuComponent implements OnInit {
   parseTocPDF(res: Object, i: number) {
     this.baseService.setUrlCurrentObject(this.baseService.getStructureObject()[i]['url']);
     this.documentService.getTOC().subscribe(data => {
+      if (i == 0)
+        this.keyExpanded = (this.counter).toString();
       if (data !== null) {
         const node = {
           title: res['label'],
