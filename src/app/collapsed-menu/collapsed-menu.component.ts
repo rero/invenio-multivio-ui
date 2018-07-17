@@ -6,6 +6,7 @@ import { ImageService } from '../services/image.service';
 import { BaseService } from '../services/base.service';
 import { Menu } from '../enum/menu.enum';
 import { Type } from '../enum/type.enum';
+import { NgZorroAntdModule, NZ_I18N, fr_FR } from 'ng-zorro-antd';
 
 @Component({
   selector: 'app-collapsed-menu',
@@ -76,7 +77,7 @@ export class CollapsedMenuComponent implements OnInit {
   }
 
   // Check if node as children's (recursive) to construct the tree
-  asChildren (val: Object, node: Object, index: number) {
+  asChildren (val: Object, node: Object, index: number){
     if (val.hasOwnProperty('childs')) {
       const childs = val['childs'];
       for (let i = 0; i < childs.length; i++) {
@@ -92,6 +93,9 @@ export class CollapsedMenuComponent implements OnInit {
         node['children'].push(subNode);
         this.asChildren( childs[i], subNode, index);
       }
+    }
+    else{
+      node['isLeaf'] = true;
     }
   }
 
@@ -134,7 +138,6 @@ export class CollapsedMenuComponent implements OnInit {
             };
             this.nodesTOC[i] = new NzTreeNode(node);
             this.sizeTOC = Object.keys(this.nodesTOC).length;
-
             this.infoTocRetrieved = true;
             break;
         }
@@ -301,6 +304,7 @@ export class CollapsedMenuComponent implements OnInit {
           };
           this.asChildren(data[j], subNode, i);
           node['children'].push(subNode);
+          
         }
         this.nodesTOC[i] = new NzTreeNode(node);
         this.sizeTOC = Object.keys(this.nodesTOC).length;
@@ -310,7 +314,6 @@ export class CollapsedMenuComponent implements OnInit {
           key: (this.counter++).toString(),
           doc: i,
           page: 1,
-          children: []
         };
         this.nodesTOC[i] = new NzTreeNode(node);
         this.sizeTOC = Object.keys(this.nodesTOC).length;

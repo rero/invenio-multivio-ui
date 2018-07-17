@@ -9,6 +9,7 @@ import { Menu } from '../enum/menu.enum';
 import { Display } from '../enum/display.enum';
 import { Type } from '../enum/type.enum';
 import { ResizedEvent } from 'angular-resize-event/resized-event';
+import { NgZorroAntdModule } from 'ng-zorro-antd';
 
 
 @Component({
@@ -150,14 +151,28 @@ export class MultivioLayoutComponent implements OnInit {
         this.contentHeight = Math.round(this.contentHeight - this.contentHeight / 100 * 20);
         break;
       case Display.FitToWidth:
-        this.contentWidth = this.maxWidth;
-        // Calculating height with ratio
-        this.contentHeight = Math.round(this.maxWidth * this.ratioPage);
+        if(this.anglePage == 90 || this.anglePage == 270){
+          this.contentWidth = Math.round(this.maxWidth * this.ratioPage); 
+          // Calculating height with ratio
+          this.contentHeight = this.maxWidth;
+        }
+        else{
+          this.contentWidth = this.maxWidth;
+          // Calculating height with ratio
+          this.contentHeight = Math.round(this.maxWidth * this.ratioPage);
+        }
         break;
       case Display.FitToHeight:
+        if (this.anglePage == 90 || this.anglePage == 270) { 
+          this.contentHeight = Math.round(this.maxHeight * this.ratioPage); 
+          // Calculating with with ratio
+          this.contentWidth = this.maxWidth;
+        }
+        else {
         this.contentHeight = this.maxHeight;
         // Calculating with with ratio
         this.contentWidth = Math.round(this.maxHeight / this.ratioPage);
+        }
         break;
       case Display.OriginalSize:
         // Set content to original sizes

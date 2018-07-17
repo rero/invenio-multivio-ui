@@ -33,7 +33,7 @@ registerLocaleData(fr);
     BrowserAnimationsModule,
     FormsModule,
     HttpClientModule,
-    NgZorroAntdModule,
+    NgZorroAntdModule.forRoot(),
     AngularResizedEventModule,
     InViewportModule
   ],

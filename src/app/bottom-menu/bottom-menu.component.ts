@@ -127,7 +127,7 @@ export class BottomMenuComponent implements OnInit {
       // Displax message error
       this.message.create('warning', `Vous avez insérez un nombre supérieur au maximum consenti ( ${this.maxValuePage} )`);
       this.currentPage = this.maxValuePage;
-    }  
+    }
   }
 
   // Set numbers of documents in the app
