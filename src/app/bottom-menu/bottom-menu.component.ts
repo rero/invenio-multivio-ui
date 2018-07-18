@@ -19,7 +19,7 @@ export class BottomMenuComponent implements OnInit {
   minValuePage = 1;
   maxValuePage = 0;
   currentAngle = 0;
-  typeDisplay: number;
+  typeDisplay: number = 1;
   isDisabled = false;
   nbrDocs = 0;
   currentDoc = 0;
@@ -116,9 +116,10 @@ export class BottomMenuComponent implements OnInit {
   // Get page from input
   getPage(nrPage: number) {
     if (nrPage <= this.maxValuePage && nrPage >= this.minValuePage) {
-      this.currentPage = nrPage;
+      this.currentPage = Number(nrPage);
       // Emmit message to parent
-      this.pageChanged.emit({ 'Page': this.currentPage, 'Angle': this.currentAngle, 'Display': this.typeDisplay , 'Doc': null });
+      this.pageChanged.emit({ 'Page': this.currentPage, 'Angle': this.currentAngle, 'Display': this.typeDisplay, 
+       'Doc': this.currentDoc, 'Mode': '' });
     } else if (nrPage < this.minValuePage) {
       // Display message error
       this.message.create('warning', `Vous avez insérez un nombre inférieur au minimum consenti ( ${this.minValuePage} )`);
