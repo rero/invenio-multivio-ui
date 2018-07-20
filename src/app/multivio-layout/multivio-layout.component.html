@@ -1,15 +1,15 @@
-<nz-layout style="height: 100%;">
+<nz-layout id="layout">
     <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" [nzWidth]="width" [nzReverseArrow]="isReverseArrow" [nzCollapsedWidth]=80>
       <!--Display logo -->
       <div class="logo">
           <!--Display full logo or mini logo is menu is collapser or not -->
           <div *ngIf="isCollapsed;then logo_mini else logo_full"></div>
           <ng-template #logo_mini>
-              <img style="margin: 5px 0px 0px -7px;" src="../../assets/images/logo_mini.png">
+              <img id="img-logo-mini" src="../../assets/images/logo_mini.png">
           </ng-template>
           <ng-template #logo_full>
-            <img style="margin: 10px 0px 0px 25px;" src="../../assets/images/logo_full.png">
-          </ng-template>   
+            <img id="img-logo-full" src="../../assets/images/logo_full.png">
+          </ng-template>
       </div>
       <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed" >
         <!--Option search on menu, only displayed if current mode is PDF  -->
@@ -60,13 +60,13 @@
     <!--Layout of page, with on resize trigger -->
     <nz-layout (resized)="onResized($event)">
       <!--Dislay info about the document -->
-      <nz-header style="background: #f0f2f5; padding:0;">
-        <h3 style="text-align: center">{{title}}</h3>
-        <h4 style="text-align: center; margin-top: -50px">{{creator}}</h4>
+      <nz-header>
+        <h3 id="title">{{title}}</h3>
+        <h4 id="creator">{{creator}}</h4>
       </nz-header>
       <!--Content -->
-      <nz-content style="margin:0 16px; overflow: auto;">
-        <div style="padding:24px; background: #f0f2f5; min-height: 360px;">
+      <nz-content>
+        <div id="div-content">
           <nz-spin [nzSpinning]="isLoading" [nzSize]="'large'" class="spinPosition">
             <!--Dislay component content -->
             <app-content></app-content>
@@ -76,7 +76,7 @@
       <!--Component bottom menu-->
       <app-bottom-menu (pageChanged)='updateImage($event)'></app-bottom-menu>
       <!--Footer -->
-      <nz-footer style="text-align: center;">Powered by 
+      <nz-footer>Powered by
         <a href="http://invenio-software.org/" target="_blank">Invenio</a>  / © Copyright <a href="http://www.rero.ch/">RERO</a>
       </nz-footer>
     </nz-layout>

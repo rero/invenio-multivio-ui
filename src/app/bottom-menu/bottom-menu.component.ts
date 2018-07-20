@@ -23,7 +23,7 @@ export class BottomMenuComponent implements OnInit {
   isDisabled = false;
   nbrDocs = 0;
   currentDoc = 0;
-  mode = '';
+  backToDocument = false;
 
   constructor(private message: NzMessageService) {}
 
@@ -43,7 +43,7 @@ export class BottomMenuComponent implements OnInit {
           if (this.currentPage === this.minValuePage) {
             if (this.currentDoc > 0) {
               this.currentDoc--;
-              this.mode = 'Back';
+              backToDocument = true;
             }
           } else if (this.currentPage > this.minValuePage) {
             this.currentPage--;
@@ -53,7 +53,7 @@ export class BottomMenuComponent implements OnInit {
           if (this.currentPage === this.minValuePage) {
             if (this.currentDoc > 0) {
               this.currentDoc--;
-              this.mode = 'Back';
+              backToDocument = true;
             }
           } else {
             this.currentPage = this.minValuePage;
@@ -103,9 +103,9 @@ export class BottomMenuComponent implements OnInit {
       }
       // Emit message to parent
       this.pageChanged.emit({'Page': this.currentPage, 'Angle': this.currentAngle, 'Display': this.typeDisplay,
-       'Doc': this.currentDoc, 'Mode': this.mode});
+       'Doc': this.currentDoc, 'IsBack': backToDocument});
       this.typeDisplay = -1;
-      this.mode = '';
+      backToDocument = false;
     } else {
       // Display message error
       this.message.create('warning', `Vous avez insérez un nombre qui n'est pas compri entre :
@@ -118,8 +118,8 @@ export class BottomMenuComponent implements OnInit {
     if (nrPage <= this.maxValuePage && nrPage >= this.minValuePage) {
       this.currentPage = Number(nrPage);
       // Emmit message to parent
-      this.pageChanged.emit({ 'Page': this.currentPage, 'Angle': this.currentAngle, 'Display': this.typeDisplay, 
-       'Doc': this.currentDoc, 'Mode': '' });
+      this.pageChanged.emit({ 'Page': this.currentPage, 'Angle': this.currentAngle, 'Display': this.typeDisplay,
+       'Doc': this.currentDoc, 'IsBack': false });
     } else if (nrPage < this.minValuePage) {
       // Display message error
       this.message.create('warning', `Vous avez insérez un nombre inférieur au minimum consenti ( ${this.minValuePage} )`);

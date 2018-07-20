@@ -152,7 +152,7 @@ export class MultivioLayoutComponent implements OnInit {
         break;
       case Display.FitToWidth:
         if(this.anglePage == 90 || this.anglePage == 270){
-          this.contentWidth = Math.round(this.maxWidth * this.ratioPage); 
+          this.contentWidth = Math.round(this.maxWidth * this.ratioPage);
           // Calculating height with ratio
           this.contentHeight = this.maxWidth;
         }
@@ -163,8 +163,8 @@ export class MultivioLayoutComponent implements OnInit {
         }
         break;
       case Display.FitToHeight:
-        if (this.anglePage == 90 || this.anglePage == 270) { 
-          this.contentHeight = Math.round(this.maxHeight * this.ratioPage); 
+        if (this.anglePage == 90 || this.anglePage == 270) {
+          this.contentHeight = Math.round(this.maxHeight * this.ratioPage);
           // Calculating with with ratio
           this.contentWidth = this.maxWidth;
         }
@@ -190,7 +190,7 @@ export class MultivioLayoutComponent implements OnInit {
         this.baseService.setUrlCurrentObject(this.baseService.getStructureObject()[this.currentDocument]['url']);
       }
       // Loading news metadata of docuement
-      if (event['Mode'] === 'Back') {
+      if (event['IsBack'] === true) {
         // Retrive info from children's
         this.modeBack = true;
         this.bottomMenuComponent.currentPage = event['Page'];

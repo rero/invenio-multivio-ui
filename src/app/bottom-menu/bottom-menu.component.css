@@ -1,32 +1,36 @@
-#bottomMenu{
+#bottom-menu {
     background-color:#001529;
     border-radius: 25px;
-    opacity: 0;  
+    opacity: 0;
     transition: 3s;
     width: 600px;
     height: 44px;
     margin: auto;
 }
 
-#affix{
+#affix {
     width: 600px;
     height: 44px;
     margin: auto;
 }
 
-#inputPage{
+#input-page {
     width: 50px;
     float: left;
     margin: 5px 5px 0px 5px;
     text-align: center;
 }
 
-#bottomMenu:hover{
+#bottom-menu:hover {
     opacity: 0.8;
     transition: 0.4s;
 }
 
-.notSelectable{
-    color:#fafafa1f !important; 
-    cursor: unset !important; 
+.not-selectable {
+    color:#fafafa1f !important;
+    cursor: unset !important;
+}
+
+.first-element {
+  margin-left: 25px;
 }

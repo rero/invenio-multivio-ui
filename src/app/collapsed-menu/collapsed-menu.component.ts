@@ -136,7 +136,7 @@ export class CollapsedMenuComponent implements OnInit {
               title: res['label'],
               key: (this.counter++).toString(),
               doc: i,
-              page: i + 1
+              page: i
             };
             this.nodesTOC[i] = new NzTreeNode(node);
             this.sizeTOC = Object.keys(this.nodesTOC).length;
