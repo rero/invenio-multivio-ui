@@ -43,7 +43,7 @@ export class BottomMenuComponent implements OnInit {
           if (this.currentPage === this.minValuePage) {
             if (this.currentDoc > 0) {
               this.currentDoc--;
-              backToDocument = true;
+              this.backToDocument = true;
             }
           } else if (this.currentPage > this.minValuePage) {
             this.currentPage--;
@@ -53,7 +53,7 @@ export class BottomMenuComponent implements OnInit {
           if (this.currentPage === this.minValuePage) {
             if (this.currentDoc > 0) {
               this.currentDoc--;
-              backToDocument = true;
+              this.backToDocument = true;
             }
           } else {
             this.currentPage = this.minValuePage;
@@ -103,9 +103,9 @@ export class BottomMenuComponent implements OnInit {
       }
       // Emit message to parent
       this.pageChanged.emit({'Page': this.currentPage, 'Angle': this.currentAngle, 'Display': this.typeDisplay,
-       'Doc': this.currentDoc, 'IsBack': backToDocument});
+       'Doc': this.currentDoc, 'IsBack': this.backToDocument});
       this.typeDisplay = -1;
-      backToDocument = false;
+      this.backToDocument = false;
     } else {
       // Display message error
       this.message.create('warning', `Vous avez insérez un nombre qui n'est pas compri entre :

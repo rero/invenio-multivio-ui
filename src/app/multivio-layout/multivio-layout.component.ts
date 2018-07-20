@@ -119,6 +119,7 @@ export class MultivioLayoutComponent implements OnInit {
 
   // Update image for rendering
   updateImage(event: Object) {
+    console.log(event);
     // Resetting bboxes
     this.contentComponent.resetBbox();
     // Start spinner loading
@@ -286,7 +287,7 @@ export class MultivioLayoutComponent implements OnInit {
     document.body.appendChild(a);
     a.setAttribute('style', 'display: none');
     a.href = url;
-    a.download = this.title;
+    a.download = this.baseService.getPhysicalInMemory()[this.currentDocument]['label'];
     a.click();
     window.URL.revokeObjectURL(url);
     a.remove();
