@@ -119,6 +119,8 @@ export class MultivioLayoutComponent implements OnInit {
 
   // Update image for rendering
   updateImage(event: Object) {
+    console.log(event);
+    
     // Resetting bboxes
     this.contentComponent.resetBbox();
     // Start spinner loading
@@ -190,7 +192,7 @@ export class MultivioLayoutComponent implements OnInit {
         this.baseService.setUrlCurrentObject(this.baseService.getStructureObject()[this.currentDocument]['url']);
       }
       // Loading news metadata of docuement
-      if (event['IsBack'] === true) {
+      if (event['IsBack']) {
         // Retrive info from children's
         this.modeBack = true;
         this.bottomMenuComponent.currentPage = event['Page'];
@@ -256,6 +258,7 @@ export class MultivioLayoutComponent implements OnInit {
           // Set info for mode search
           this.contentComponent.setInfoPage(this.contentHeight / this.originalHeight, this.currentPage, this.anglePage);
           this.documentChanged = false;
+          this.modeBack = false;
         });
         break;
     }

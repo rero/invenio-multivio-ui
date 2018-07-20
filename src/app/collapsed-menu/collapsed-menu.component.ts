@@ -73,12 +73,7 @@ export class CollapsedMenuComponent implements OnInit {
 
   // Display the page from TOC
   onClickTree(e: any): void {
-    if(this.hasMixedObjects && this.typeObject == Type.Image){
-      this.getPage(Number(1), Number(e.node.origin.doc));
-    }
-    else{
-      this.getPage(Number(e.node.origin.page), Number(e.node.origin.doc));
-    }
+    this.getPage(Number(e.node.origin.page), Number(e.node.origin.doc));
   }
 
   // Check if node as children's (recursive) to construct the tree
@@ -141,7 +136,7 @@ export class CollapsedMenuComponent implements OnInit {
               title: res['label'],
               key: (this.counter++).toString(),
               doc: this.hasMixedObjects ? i : null,
-              page: i + 1
+              page: this.hasMixedObjects ? 1 : i + 1,
             };
             this.nodesTOC[i] = new NzTreeNode(node);
             this.sizeTOC = Object.keys(this.nodesTOC).length;
