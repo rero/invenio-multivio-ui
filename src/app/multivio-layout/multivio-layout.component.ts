@@ -119,7 +119,6 @@ export class MultivioLayoutComponent implements OnInit {
 
   // Update image for rendering
   updateImage(event: Object) {
-    console.log(event);
     // Resetting bboxes
     this.contentComponent.resetBbox();
     // Start spinner loading

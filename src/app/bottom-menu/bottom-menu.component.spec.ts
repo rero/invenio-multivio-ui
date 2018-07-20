@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { NgZorroAntdModule } from 'ng-zorro-antd';
 import { BottomMenuComponent } from './bottom-menu.component';
+import { FormsModule } from '@angular/forms';
 
 describe('BottomMenuComponent', () => {
   let component: BottomMenuComponent;
@@ -8,7 +9,11 @@ describe('BottomMenuComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ BottomMenuComponent ]
+      declarations: [ BottomMenuComponent ],
+      imports: [
+        NgZorroAntdModule.forRoot(),
+        FormsModule
+      ],
     })
     .compileComponents();
   }));
