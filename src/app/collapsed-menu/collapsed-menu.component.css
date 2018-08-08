@@ -1,25 +1,60 @@
-#subMenu{
+#sub-menu {
     background-color:#001529cc;
     overflow: auto;
 }
 
-
-.colorText{
-    color:rgba(255,255,255,.65);
-    padding: 10px;
-    width: 290px;
+#collapsed {
+    height:100%;
 }
 
-#searchDoc{
+#mode-thumb {
+    height: 5%;
+    position: relative;
+}
+
+#mode-thumb-background {
+    background-color: #343942e0;
+    height: 100%;
+}
+
+#mode-thumb-icon-1 {
+    left: 25%;
+    position: absolute;
+}
+
+#mode-thumb-icon-2 {
+    left: 60%;
+    position: absolute;
+}
+
+#search-doc {
     padding: 15px;
     width: 100%;
 }
 
-#divResults{
+#title-results {
+    margin-bottom: 15px;
+    float: left;
+}
+
+#results {
     background-color: white;
     margin-top: 25px;
     border-radius: 5px;
     padding: 5px;
+}
+
+#title-no-results {
+    margin-bottom: 15px;
+    float: left;
+}
+
+#no-results {
+    background-color: white;
+    margin-top: 25px;
+    border-radius: 5px;
+    padding: 5px;
+    height: 40px;
 }
 
 ul {
@@ -27,14 +62,14 @@ ul {
     margin: 0;
     padding: 0;
 }
-  
+
 li {
     font-size: 12px;
     border-bottom: 1px solid #ccc;
     white-space: nowrap;
 }
-  
-li{
+
+li {
     text-decoration: none;
     color: #000;
     -webkit-transition: font-size 0.3s ease, background-color 0.3s ease;
@@ -53,7 +88,39 @@ li:hover {
     background: #40a9ff3b;
 }
 
-.cancelResults{
+.result {
+  padding: 3px;
+}
+
+.number-thumb {
+    text-align: center;
+    color:rgba(255,255,255,.65);
+}
+
+.top-margin-thumb {
+  margin-top: 25px;
+}
+
+.grid-thumb {
+    margin: auto;
+    display: block;
+    cursor: pointer;
+    width:100%;
+}
+
+.list-thumb {
+    margin: auto;
+    display: block;
+    cursor: pointer;
+}
+
+.color-text {
+    color:rgba(255,255,255,.65);
+    padding: 10px;
+    width: 290px;
+}
+
+.cancel-results {
     color: red;
     font-size: 20px;
     cursor: pointer;
@@ -70,5 +137,3 @@ li:hover {
     padding: 20px;
     text-align: center;
 }
-
-

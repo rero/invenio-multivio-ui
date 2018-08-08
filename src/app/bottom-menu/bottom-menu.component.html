@@ -1,30 +1,29 @@
 <nz-affix id="affix" nzOffsetBottom="0">
     <!--Bottom menu (can be displayed all time or on hover effect) -->
-    <div id="bottomMenu" [ngStyle]="isVisible && {'opacity':'0.8'}">
+    <div id="bottom-menu" [ngStyle]="isVisible && {'opacity':'0.8'}">
         <!--Rotation options -->
-        <i (click)="onMenuClick(BottomMenu.RotateRight)" class="fa fa-repeat myIcons" style="margin-left: 20px;"></i>
-        <i (click)="onMenuClick(BottomMenu.RotateLeft)" class="fa fa-undo myIcons"></i>
+        <i (click)="onMenuClick(BottomMenu.RotateRight)" class="fa fa-repeat my-icons first-element"></i>
+        <i (click)="onMenuClick(BottomMenu.RotateLeft)" class="fa fa-undo my-icons"></i>
         <!--Zoom options -->
-        <i (click)="onMenuClick(BottomMenu.ZoomIn)" class="fa fa-search-plus myIcons"></i> 
-        <i (click)="onMenuClick(BottomMenu.ZoomOut)" class="fa fa-search-minus myIcons"></i>
+        <i (click)="onMenuClick(BottomMenu.ZoomIn)" class="fa fa-search-plus my-icons"></i>
+        <i (click)="onMenuClick(BottomMenu.ZoomOut)" class="fa fa-search-minus my-icons"></i>
         <!--Navigations options -->
-        <i  (click)="(currentPage != minValuePage || currentDoc != 0) && onMenuClick(BottomMenu.FirstPage)" 
-            class="anticon anticon-fast-backward myIcons" 
-            [ngClass]="currentPage == minValuePage && currentDoc == 0 ? 'notSelectable' : '' " 
-            style="margin-left: 25px"></i>
-        <i  (click)="(currentPage != minValuePage || currentDoc != 0) && onMenuClick(BottomMenu.DecrementPage)" 
-            class="anticon anticon-step-backward myIcons" 
-            [ngClass]="currentPage == minValuePage && currentDoc == 0 ? 'notSelectable' : '' " ></i>
-        <input nz-input (keyup.enter)="getPage(inputPage.value)" [(ngModel)]="currentPage" #inputPage id="inputPage" [disabled]="isDisabled">
-        <i  (click)="(currentPage != maxValuePage || currentDoc != nbrDocs) && onMenuClick(BottomMenu.IncrementPage)" 
-            class="anticon anticon-step-forward myIcons" 
-            [ngClass]="currentPage == maxValuePage && currentDoc == nbrDocs ? 'notSelectable' : '' "></i>
-        <i (click)="(currentPage != maxValuePage || currentDoc != nbrDocs) && onMenuClick(BottomMenu.LastPage)" 
-            class="anticon anticon-fast-forward myIcons" 
-            [ngClass]="currentPage == maxValuePage && currentDoc == nbrDocs ? 'notSelectable' : '' "></i>
+        <i  (click)="(currentPage != minValuePage || currentDoc != 0) && onMenuClick(BottomMenu.FirstPage)"
+            class="anticon anticon-fast-backward my-icons first-element"
+            [ngClass]="currentPage == minValuePage && currentDoc == 0 ? 'not-selectable' : '' "></i>
+        <i  (click)="(currentPage != minValuePage || currentDoc != 0) && onMenuClick(BottomMenu.DecrementPage)"
+            class="anticon anticon-step-backward my-icons"
+            [ngClass]="currentPage == minValuePage && currentDoc == 0 ? 'not-selectable' : '' " ></i>
+        <input nz-input (keyup.enter)="getPage(inputPage.value)" [(ngModel)]="currentPage" #inputPage id="input-page" [disabled]="isDisabled">
+        <i  (click)="(currentPage != maxValuePage || currentDoc != nbrDocs) && onMenuClick(BottomMenu.IncrementPage)"
+            class="anticon anticon-step-forward my-icons"
+            [ngClass]="currentPage == maxValuePage && currentDoc == nbrDocs ? 'not-selectable' : '' "></i>
+        <i (click)="(currentPage != maxValuePage || currentDoc != nbrDocs) && onMenuClick(BottomMenu.LastPage)"
+            class="anticon anticon-fast-forward my-icons"
+            [ngClass]="currentPage == maxValuePage && currentDoc == nbrDocs ? 'not-selectable' : '' "></i>
         <!--Fit document options -->
-        <i (click)="onMenuClick(BottomMenu.FitToHeight)" class="fa fa-arrows-v myIcons" style="margin-left: 25px"></i>
-        <i (click)="onMenuClick(BottomMenu.FitToWidth)" class="fa fa-arrows-h myIcons"></i>
-        <i (click)="onMenuClick(BottomMenu.OriginalSize)" class="fa fa-file myIcons"></i>
+        <i (click)="onMenuClick(BottomMenu.FitToHeight)" class="fa fa-arrows-v my-icons first-element"></i>
+        <i (click)="onMenuClick(BottomMenu.FitToWidth)" class="fa fa-arrows-h my-icons"></i>
+        <i (click)="onMenuClick(BottomMenu.OriginalSize)" class="fa fa-file my-icons"></i>
     </div>
 </nz-affix>

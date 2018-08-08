@@ -119,6 +119,8 @@ export class MultivioLayoutComponent implements OnInit {
 
   // Update image for rendering
   updateImage(event: Object) {
+    console.log(event);
+    
     // Resetting bboxes
     this.contentComponent.resetBbox();
     // Start spinner loading
@@ -152,7 +154,7 @@ export class MultivioLayoutComponent implements OnInit {
         break;
       case Display.FitToWidth:
         if(this.anglePage == 90 || this.anglePage == 270){
-          this.contentWidth = Math.round(this.maxWidth * this.ratioPage); 
+          this.contentWidth = Math.round(this.maxWidth * this.ratioPage);
           // Calculating height with ratio
           this.contentHeight = this.maxWidth;
         }
@@ -163,8 +165,8 @@ export class MultivioLayoutComponent implements OnInit {
         }
         break;
       case Display.FitToHeight:
-        if (this.anglePage == 90 || this.anglePage == 270) { 
-          this.contentHeight = Math.round(this.maxHeight * this.ratioPage); 
+        if (this.anglePage == 90 || this.anglePage == 270) {
+          this.contentHeight = Math.round(this.maxHeight * this.ratioPage);
           // Calculating with with ratio
           this.contentWidth = this.maxWidth;
         }
@@ -190,7 +192,7 @@ export class MultivioLayoutComponent implements OnInit {
         this.baseService.setUrlCurrentObject(this.baseService.getStructureObject()[this.currentDocument]['url']);
       }
       // Loading news metadata of docuement
-      if (event['Mode'] === 'Back') {
+      if (event['IsBack']) {
         // Retrive info from children's
         this.modeBack = true;
         this.bottomMenuComponent.currentPage = event['Page'];
@@ -256,6 +258,7 @@ export class MultivioLayoutComponent implements OnInit {
           // Set info for mode search
           this.contentComponent.setInfoPage(this.contentHeight / this.originalHeight, this.currentPage, this.anglePage);
           this.documentChanged = false;
+          this.modeBack = false;
         });
         break;
     }
@@ -286,7 +289,7 @@ export class MultivioLayoutComponent implements OnInit {
     document.body.appendChild(a);
     a.setAttribute('style', 'display: none');
     a.href = url;
-    a.download = this.title;
+    a.download = this.baseService.getPhysicalInMemory()[this.currentDocument]['label'];
     a.click();
     window.URL.revokeObjectURL(url);
     a.remove();

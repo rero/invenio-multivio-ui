@@ -5,11 +5,47 @@
 
  nz-header {
     background: #f0f2f5;
-    padding: 24px 50px;
+    padding: 0px;
     color: rgba(0,0,0,.65);
     font-size: 14px;
+ }
+
+ nz-footer {
+    text-align: center;
+ }
+
+ nz-content {
+    margin:0 16px;
+    overflow: auto;
+ }
+
+ #div-content {
+    padding:24px;
+    background: #f0f2f5;
+    min-height: 360px;
  }
 
  .spin-position {
     top: 100% !important;
  }
+
+ #img-logo-full {
+    margin: 10px 0px 0px 25px;
+ }
+
+#img-logo-mini {
+    margin: 5px 0px 0px -7px;
+}
+
+#layout {
+    height: 100%;
+}
+
+#creator {
+    text-align: center;
+    margin-top: -50px;
+}
+
+#title {
+    text-align: center;
+}

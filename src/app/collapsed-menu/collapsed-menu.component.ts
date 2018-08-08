@@ -135,8 +135,8 @@ export class CollapsedMenuComponent implements OnInit {
             const node = {
               title: res['label'],
               key: (this.counter++).toString(),
-              doc: i,
-              page: i + 1
+              doc: this.hasMixedObjects ? i : null,
+              page: this.hasMixedObjects ? 1 : i + 1,
             };
             this.nodesTOC[i] = new NzTreeNode(node);
             this.sizeTOC = Object.keys(this.nodesTOC).length;
@@ -308,7 +308,7 @@ export class CollapsedMenuComponent implements OnInit {
           };
           this.asChildren(data[j], subNode, i);
           node['children'].push(subNode);
-          
+
         }
         this.nodesTOC[i] = new NzTreeNode(node);
         this.sizeTOC = Object.keys(this.nodesTOC).length;

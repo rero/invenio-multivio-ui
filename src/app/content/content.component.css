@@ -1,0 +1,13 @@
+#container {
+  margin: auto;
+  display: table;
+}
+
+.relative-position {
+  position: relative;
+  display: inline-flex;
+}
+
+.absolute-position {
+  position: absolute;
+}
