@@ -17,6 +17,15 @@ import { ImageService } from './services/image.service';
 import { BaseService } from './services/base.service';
 import { UrlPrefixService } from './services/url-prefix.service';
 import { InViewportModule } from 'ng-in-viewport';
+import { RouterModule, Routes } from '@angular/router';
+import { NotFoundComponent } from './not-found/not-found.component';
+
+const routes: Routes = [
+  // {path: '', redirectTo: 'record', pathMatch: 'full'},
+  {path: '', component: MultivioLayoutComponent},
+  {path: ':doctype/:pid', component: MultivioLayoutComponent},
+  { path: '**', component: NotFoundComponent }
+];
 
 registerLocaleData(fr);
 
@@ -27,6 +36,7 @@ registerLocaleData(fr);
     ContentComponent,
     MultivioLayoutComponent,
     CollapsedMenuComponent,
+    NotFoundComponent,
   ],
   imports: [
     BrowserModule,
@@ -35,6 +45,7 @@ registerLocaleData(fr);
     HttpClientModule,
     NgZorroAntdModule.forRoot(),
     AngularResizedEventModule,
+    RouterModule.forRoot(routes),
     InViewportModule
   ],
   providers: [BaseService, DocumentService, ImageService, UrlPrefixService, { provide: NZ_I18N, useValue: fr_FR }],

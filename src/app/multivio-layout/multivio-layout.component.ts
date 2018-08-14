@@ -10,6 +10,7 @@ import { Display } from '../enum/display.enum';
 import { Type } from '../enum/type.enum';
 import { ResizedEvent } from 'angular-resize-event/resized-event';
 import { NgZorroAntdModule } from 'ng-zorro-antd';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 @Component({
@@ -27,8 +28,9 @@ export class MultivioLayoutComponent implements OnInit {
   @ViewChild(ContentComponent)
   private contentComponent: ContentComponent;
 
-  @Input() url: string;
-
+  // @Input() url: string;
+  logo = './assets/images/logo_full.png';
+  miniLogo = './assets/images/logo_mini.png';
   Menu = Menu;
   Type = Type;
   isCollapsed = false;
@@ -53,13 +55,27 @@ export class MultivioLayoutComponent implements OnInit {
   documentChanged = false;
   modeBack = false;
 
-  constructor(private documentService: DocumentService, private imageService: ImageService, private baseService: BaseService) { }
+  constructor(private documentService: DocumentService,
+              private imageService: ImageService,
+              private baseService: BaseService,
+              private route: ActivatedRoute,
+              // private router: Router
+  ) {
+  }
 
+  getParams(params) {
+    // let params = this.route.snapshot.paramMap;
+    // console.log(params.get('doctype'), params.get('record'));
+
+    const doctype = params.get('doctype');
+    const pid = params.get('pid');
+    if (doctype && pid) {
+      this.baseService.setUrl(doctype + '/' + pid);
+      this.setMetada();
+    }
+  }
   ngOnInit() {
-    // Setting url metadata (JSON or XML )
-    this.baseService.setUrl(this.url);
-    // Get metadata Json
-    this.setMetada();
+    this.route.paramMap.subscribe(params => this.getParams(params));
   }
 
   // Getting info from JSON
@@ -72,7 +88,9 @@ export class MultivioLayoutComponent implements OnInit {
       // Setting title info
       this.title = res['title'];
       // Setting creator info
-      this.creator = res['creator'][0];
+      if (res['creator']){
+        this.creator = res['creator'][0];
+      }
       this.setPhysical(0);
       }
     );
@@ -120,7 +138,7 @@ export class MultivioLayoutComponent implements OnInit {
   // Update image for rendering
   updateImage(event: Object) {
     console.log(event);
-    
+
     // Resetting bboxes
     this.contentComponent.resetBbox();
     // Start spinner loading

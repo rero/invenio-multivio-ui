@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { UrlPrefixService } from './url-prefix.service';
 import { HttpClient, } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -23,12 +24,24 @@ export class BaseService {
 
   /** GET metadata from json or xml */
   getMetadata(): Observable<Object> {
-    return this.http.get<Object[]>(this.prefixMetadata + this.url);
+    // return this.http.get<Object[]>(this.prefixMetadata + this.url);
+    // console.log(this.UrlPrefixService, this.url);
+  //   const httpOptions = {
+  //   headers: new HttpHeaders({
+  //     'Accept':  'application/xml'
+  //   })
+  // };
+    return this.http.get<Object[]>(
+      this.urlPrefix.invenioAPI + this.url + '/metadata',
+      // {
+      //   headers: {'Accept': 'application/xml'}
+      // }
+    );
   }
 
   /** GET metadata from json or xml */
   getPhysical(): Observable<Object> {
-    return this.http.get<Object[]>(this.prefixPhysical + this.url);
+    return this.http.get<Object[]>(this.urlPrefix.invenioAPI + this.url + '/physical');
   }
 
   /** SET url document from the document for the service */
@@ -44,13 +57,13 @@ export class BaseService {
   /** SET url of document  for the service */
   setUrl(url: string) {
     this.url = url;
-    if (this.url.endsWith('.json/')) {
-      this.prefixMetadata = this.urlPrefix.metadataJSON;
-      this.prefixPhysical = this.urlPrefix.physicalJSON;
-    } else {
-      this.prefixMetadata = this.urlPrefix.metadataXML;
-      this.prefixPhysical = this.urlPrefix.physicalXML;
-    }
+    // if (this.url.endsWith('.json')) {
+    //   this.prefixMetadata = this.urlPrefix.metadataJSON;
+    //   this.prefixPhysical = this.urlPrefix.physicalJSON;
+    // } else {
+    //   this.prefixMetadata = this.urlPrefix.metadataXML;
+    //   this.prefixPhysical = this.urlPrefix.physicalXML;
+    // }
   }
 
   /** GET url json of document from the document for the service */

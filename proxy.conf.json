@@ -34,5 +34,14 @@
     "pathRewrite": {
       "^/api-xml": "http://localhost:5000/api-xml"
     }
+  },
+  "/api/*": {
+    "target": "http://localhost:5000",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api": "http://localhost:5000/api"
+    }
   }
 }

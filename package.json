@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --proxy-config proxy.conf.json --open",
-    "build": "ng build",
+    "start": "ng serve --proxy-config proxy.conf.json --source-map=false",
+    "build": "ng build --output-path ../invenio-multivio/invenio_multivio/static/js/invenio_multivio_ui --deploy-url /static/js/invenio_multivio_ui/ --base-href /multivio/ --source-map=false",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
