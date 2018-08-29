@@ -19,7 +19,7 @@ export class BottomMenuComponent implements OnInit {
   minValuePage = 1;
   maxValuePage = 0;
   currentAngle = 0;
-  typeDisplay: number = 1;
+  typeDisplay: number = -1;
   isDisabled = false;
   nbrDocs = 0;
   currentDoc = 0;
